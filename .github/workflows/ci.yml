@@ -17,7 +17,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -107,10 +107,10 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: failure
-          content: "<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 CI 실패!"
-          title: "🔴 Frontend CI Failed"
+          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 CI 실패!'
+          title: '🔴 Frontend CI Failed'
           description: |
             **Branch:** ${{ github.ref_name }}
             **Commit:** ${{ github.sha }}
             **Author:** ${{ github.actor }}
-          color: 0xFF0000
+          color: 0xff0000
