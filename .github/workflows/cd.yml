@@ -1,13 +1,13 @@
-name: Frontend CD
+name: Frontend CD (v. 1.0)
 
 on:
   pull_request:
-    types: [closed]
-    branches:
-      - dev
-  push:
-    branches:
-      - infra/cicd
+      types: [ closed ]
+      branches:
+          - dev
+  # push:
+  #   branches:
+  #     - infra/cicd
 
 jobs:
   deploy-dev:
@@ -34,26 +34,31 @@ jobs:
           cd /home/ubuntu/mine/frontend/4-team-IMYME-fe
 
           echo "📥 Git sync"
-          git fetch origin develop
-          git reset --hard origin/develop
+          git fetch origin 
+          git reset --hard origin/dev
 
           echo "📦 Install pnpm & deps"
-          corepack enable
           pnpm install
 
           echo "🏗 Build"
           pnpm next build
+
+          echo "📁 Ensure deploy directory"
+          sudo mkdir -p /var/www/frontend
+          sudo chown -R ubuntu:ubuntu /var/www/frontend
+
 
           echo "🧹 Clean old build"
           rm -rf /var/www/frontend/*
 
           echo "📤 Deploy build artifacts"
           cp -r .next /var/www/frontend/.next
-          cp -r public /var/www/frontend/public
           cp package.json /var/www/frontend/
 
           echo "🔁 Restart frontend (if using pm2)"
-          pm2 restart frontend || pm2 start pnpm --name frontend -- start
+          pm2 delete frontend || true
+          pm2 start npx --name frontend -- next start -p 3000
+
 
           echo "🎉 Frontend Deploy Finished"
           EOF
@@ -74,7 +79,7 @@ jobs:
           title: "🟢 Frontend Deploy Success"
           content: "프론트엔드 개발서버 배포 완료!"
           description: |
-            **Branch:** develop
+            **Branch:** dev
             **Commit:** ${{ github.sha }}
             **서버:** Dev Frontend
           color: 0x00ff00
@@ -95,7 +100,7 @@ jobs:
           title: "🔴 Frontend Deploy Failed"
           content: "<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 배포 실패!"
           description: |
-            **Branch:** develop
+            **Branch:** dev
             **Commit:** ${{ github.sha }}
             **에러 로그:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           color: 0xff0000
