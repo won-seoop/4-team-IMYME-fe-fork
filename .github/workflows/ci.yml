@@ -1,9 +1,11 @@
 name: Frontend CI
 
 on:
-  
   pull_request:
-    branches: [main, develop]
+    branches:
+        - dev
+ㄴ
+
 
 jobs:
   ci:
