@@ -1,5 +1,5 @@
-import LoginPage from '@/pages/login/ui/client/LoginPage'
+import { LoginPage } from '@/_pages/login/ui'
 
-export default function HomePage() {
+export default function Page() {
   return <LoginPage />
 }

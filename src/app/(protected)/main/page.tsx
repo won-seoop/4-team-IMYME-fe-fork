@@ -1,3 +1,5 @@
-export default function MainPage() {
-  return <div>Main</div>
+import { MainPage } from '@/_pages/main'
+
+export default function Page() {
+  return <MainPage />
 }
