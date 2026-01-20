@@ -45,7 +45,7 @@ jobs:
 
           echo "📁 Ensure deploy directory"
           sudo mkdir -p /var/www/frontend
-          sudo chown -R ubuntu:ubuntu /var/www/frontendㄴㄴㄴ
+          sudo chown -R ubuntu:ubuntu /var/www/frontend
 
 
           echo "🧹 Clean old build"
