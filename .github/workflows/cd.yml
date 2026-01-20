@@ -43,7 +43,10 @@ jobs:
           echo "🏗 Build"
           pnpm next build
 
-          echo "🧹 Clean old build"
+          echo "📁 Ensure deploy directory"
+          mkdir -p /var/www/frontendㄴ
+
+          echo "🧹 Clean old build"ㄴ
           rm -rf /var/www/frontend/*
 
           echo "📤 Deploy build artifacts"
