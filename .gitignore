@@ -47,7 +47,7 @@ temp/
 .eslintcache
 *.tsbuildinfo
 
-# Turborepo / Nx (if used)
+# Turborepo / Nx (쓰는 경우)
 .turbo/
 .nx/
 
@@ -89,13 +89,13 @@ Thumbs.db
 *.swn
 
 # ------------------------------
-# Vercel / Netlify (optional)
+# Vercel / Netlify (선택)
 # ------------------------------
 .vercel/
 .netlify/
 
 # ------------------------------
-# Local DB / uploads (if used)
+# Local DB / uploads (프로젝트에 해당하면)
 # ------------------------------
 *.sqlite
 *.sqlite3
