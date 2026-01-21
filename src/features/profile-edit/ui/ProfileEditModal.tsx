@@ -21,10 +21,6 @@ import {
 const MODAL_CONTENT_CLASS = 'flex flex-col sm:min-h-[450px] sm:max-w-[350px] items-center'
 const LABEL_CLASS = 'self-start font-semibold'
 
-const NICKNAME_TOO_SHORT_HELPER = '닉네임은 2자 이상 입력해주세요.'
-const NICKNAME_TOO_LONG_HELPER = '닉네임은 10자 이하로 입력해주세요.'
-// const NICKNAME_DUPLICATE_HELPER = '이미 사용 중인 닉네임입니다.'
-
 type ProfileEditModalProps = {
   trigger: ReactNode
   onClose?: () => void
