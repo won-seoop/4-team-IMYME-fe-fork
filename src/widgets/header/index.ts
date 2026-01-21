@@ -1,1 +1,2 @@
-export { Header } from './ui/Header'
+export { Header } from './ui/client/Header'
+export { useProfileEditModal } from './model/client/useProfileEditModal'

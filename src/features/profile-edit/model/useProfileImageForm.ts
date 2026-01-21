@@ -1,6 +1,6 @@
 import { type ChangeEventHandler, useCallback, useEffect, useRef, useState } from 'react'
 
-import { validateProfileImage } from '@/features/profile-edit'
+import { validateProfileImage } from './validateProfileImage'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/heic', 'image/webp']
 

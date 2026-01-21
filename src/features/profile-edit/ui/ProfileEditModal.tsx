@@ -1,5 +1,3 @@
-import { type ReactNode } from 'react'
-
 import {
   ProfileImage,
   NicknameInput,
@@ -13,7 +11,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
   DialogFooter,
 } from '@/shared/ui/dialog'
@@ -22,11 +19,11 @@ const MODAL_CONTENT_CLASS = 'flex flex-col sm:min-h-[450px] sm:max-w-[350px] ite
 const LABEL_CLASS = 'self-start font-semibold'
 
 type ProfileEditModalProps = {
-  trigger: ReactNode
-  onClose?: () => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function ProfileEditModal({ trigger, onClose }: ProfileEditModalProps) {
+export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) {
   const {
     imagePreview,
     handleFileChange,
@@ -43,15 +40,11 @@ export function ProfileEditModal({ trigger, onClose }: ProfileEditModalProps) {
 
   const handleProfileEdit = () => {}
 
-  const handleProfileModalOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen) {
-      onClose?.()
-    }
-  }
-
   return (
-    <Dialog onOpenChange={handleProfileModalOpenChange}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className={MODAL_CONTENT_CLASS}>
         <DialogHeader className="items-center">
           <DialogTitle>프로필 수정하기</DialogTitle>
