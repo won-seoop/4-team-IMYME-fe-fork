@@ -1,3 +1,12 @@
+import { ProfileDashboard } from '@/widgets/profile'
+
 export function MyPage() {
-  return <div>My Page</div>
+  return (
+    <div className="relative">
+      <ProfileDashboard
+        navigateToMyPage={false}
+        showBackButton={true}
+      />
+    </div>
+  )
 }

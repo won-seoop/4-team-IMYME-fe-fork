@@ -1,7 +1,11 @@
+import { ModeButton } from '@/features/mode'
+import { ProfileDashboard } from '@/widgets/profile'
+
 export function MainPage() {
   return (
-    <div className="w-full">
-      <div>Main Page</div>
-    </div>
+    <>
+      <ProfileDashboard />
+      <ModeButton variant="levelup" />
+    </>
   )
 }

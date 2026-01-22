@@ -18,6 +18,7 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
         login: 'btn-login',
         modal_btn_primary: 'modal-btn-primary',
+        mode_btn_primary: 'mode-btn-primary',
       },
       size: {
         default: 'h-9 px-4 py-2',

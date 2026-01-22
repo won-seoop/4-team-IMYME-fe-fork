@@ -1,5 +1,5 @@
 type NicknameValidationResult =
-  | { ok: true; reason: 'too-long' | null }
+  | { ok: true; reason: null }
   | { ok: false; reason: 'too-short' | 'too-long' }
 
 const MIN_NICKNAME_LENGTH = 2
