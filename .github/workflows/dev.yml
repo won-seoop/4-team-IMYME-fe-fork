@@ -85,13 +85,22 @@ jobs:
               }
             }
 
-      # 10. 빌드 결과 업로드
+      # 10. 배포용 파일 준비
+      - name: Prepare deployment files
+        if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
+        run: |
+          mkdir -p deploy
+          cp -r .next deploy/
+          cp package.json deploy/
+          cp pnpm-lock.yaml deploy/
+
+      # 11. 빌드 결과 업로드
       - name: Upload artifact
         if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
         uses: actions/upload-artifact@v4
         with:
           name: frontend-dev-latest
-          path: .next/
+          path: deploy/
           retention-days: 15
           overwrite: true
           include-hidden-files: true
@@ -168,18 +177,25 @@ jobs:
           RELEASE_DIR=$RELEASES_DIR/$RELEASE_ID
           LOG_DIR=$SHARED_DIR/logs
 
-          mkdir -p "$RELEASE_DIR/.next" "$LOG_DIR"
+          mkdir -p "$RELEASE_DIR" "$LOG_DIR"
 
-          # 1. 빌드 아티팩트를 .next 폴더로 이동
-          cp -r $APP_DIR/build/. "$RELEASE_DIR/.next/"
+          # 1. 빌드 아티팩트 복사 (.next, package.json, pnpm-lock.yaml)
+          cp -r $APP_DIR/build/.next "$RELEASE_DIR/"
+          cp $APP_DIR/build/package.json "$RELEASE_DIR/"
+          cp $APP_DIR/build/pnpm-lock.yaml "$RELEASE_DIR/"
 
-          # 2. current 심볼릭 링크 교체
-          ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
+          # 2. 의존성 설치
+          cd "$RELEASE_DIR"
+          pnpm install --prod --frozen-lockfile
 
-          # 3. 이전 release 3개만 유지
+          # 3. current 심볼릭 링크 교체
+          rm -rf "$CURRENT_LINK"
+          ln -s "$RELEASE_DIR" "$CURRENT_LINK"
+
+          # 4. 이전 release 3개만 유지
           ls -1dt "$RELEASES_DIR"/* | tail -n +4 | xargs -r rm -rf
 
-          # 4. PM2로 프론트 서버 재시작
+          # 5. PM2로 프론트 서버 재시작
           cd "$CURRENT_LINK"
           pm2 delete frontend || true
           pm2 start npx --name frontend -- next start -p 3000
