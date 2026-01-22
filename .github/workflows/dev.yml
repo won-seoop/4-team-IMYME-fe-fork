@@ -65,21 +65,7 @@ jobs:
       - name: Build
         run: pnpm next build
 
-      # 9. 디버깅 - 빌드 결과 확인
-      - name: Debug - Check build output
-        run: |
-          echo "=== Current directory ==="
-          pwd
-          echo "=== Root directory contents ==="
-          ls -la
-          echo "=== .next directory ==="
-          ls -la .next/ || echo ".next NOT FOUND"
-          echo "=== Find all possible build folders ==="
-          find . -type d -name ".next" 2>/dev/null
-          find . -type d -name "out" 2>/dev/null
-          find . -type d -name "build" 2>/dev/null
-
-      # 10. 이전 아티팩트 삭제
+      # 9. 이전 아티팩트 삭제
       - name: Delete old artifacts
         if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
         uses: actions/github-script@v7
@@ -99,7 +85,7 @@ jobs:
               }
             }
 
-      # 11. 빌드 결과 업로드
+      # 10. 빌드 결과 업로드
       - name: Upload artifact
         if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
         uses: actions/upload-artifact@v4
@@ -108,7 +94,7 @@ jobs:
           path: .next/
           retention-days: 15
           overwrite: true
-          include-hidden-files: true # 이거 추가!
+          include-hidden-files: true
 
   ci-notify-success:
     needs: ci
@@ -160,10 +146,12 @@ jobs:
           name: frontend-dev-latest
           path: ./frontend-build
 
-      # 3. 서버 전송
+      # 3. 서버 전송 (압축해서 빠르게)
       - name: Copy artifact to dev server
         run: |
-          scp -i ~/.ssh/id_rsa -r ./frontend-build/* ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend/build
+          tar -czf frontend-build.tar.gz -C ./frontend-build .
+          scp -i ~/.ssh/id_rsa frontend-build.tar.gz ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend/
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'rm -rf /home/ubuntu/mine/frontend/build/* && tar -xzf /home/ubuntu/mine/frontend/frontend-build.tar.gz -C /home/ubuntu/mine/frontend/build && rm /home/ubuntu/mine/frontend/frontend-build.tar.gz'
 
       # 4. 배포 (release/current 구조)
       - name: Deploy to Dev Server
@@ -191,7 +179,7 @@ jobs:
           # 3. 이전 release 3개만 유지
           ls -1dt "$RELEASES_DIR"/* | tail -n +4 | xargs -r rm -rf
 
-          # 4. PM2로 프론트 서버 재시작 (current 디렉토리에서 실행)
+          # 4. PM2로 프론트 서버 재시작
           cd "$CURRENT_LINK"
           pm2 delete frontend || true
           pm2 start npx --name frontend -- next start -p 3000
