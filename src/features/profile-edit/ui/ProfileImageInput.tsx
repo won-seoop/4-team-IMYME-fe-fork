@@ -1,7 +1,7 @@
 import Image, { type StaticImageData } from 'next/image'
 import { type ChangeEventHandler } from 'react'
 
-import { HelperText } from '@/features/help'
+import { HelperText } from '@/shared'
 import { Input } from '@/shared/ui/input'
 
 const IMAGE_SIZE_CLASS = 'h-[150px] w-[150px]'

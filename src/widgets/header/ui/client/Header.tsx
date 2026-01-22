@@ -4,8 +4,7 @@ import { Menu } from 'lucide-react'
 
 import { MenuModal } from '@/features/header-menu'
 import { ProfileEditModal } from '@/features/profile-edit'
-import { useMenuModal } from '@/widgets/header/model/client/useMenuModal'
-import { useProfileEditModal } from '@/widgets/header/model/client/useProfileEditModal'
+import { useMenuModal, useProfileEditModal } from '@/widgets/header'
 
 type HeaderProps = {
   showMenu?: boolean

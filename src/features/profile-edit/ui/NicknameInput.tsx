@@ -1,4 +1,4 @@
-import { HelperText } from '@/features/help'
+import { HelperText } from '@/shared'
 import { Input } from '@/shared/ui/input'
 
 import type { ChangeEventHandler, FocusEventHandler } from 'react'
