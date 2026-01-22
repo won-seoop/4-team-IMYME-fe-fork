@@ -1,3 +1,7 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
+
 import { Avatar, Nickname, StatCards } from '@/entities/user'
 import { DefaultAvatar } from '@/shared'
 
@@ -11,9 +15,26 @@ const userData = {
 
 const AVATAR_SIZE_PX = 60
 
-export function ProfileDashboard() {
+interface ProfileDashboardProps {
+  navigateToMyPage?: boolean
+}
+
+export function ProfileDashboard({ navigateToMyPage = true }: ProfileDashboardProps) {
+  const router = useRouter()
+
+  const handleNavigateToMyPage = () => {
+    if (!navigateToMyPage) {
+      return
+    }
+
+    router.push('/mypage')
+  }
+
   return (
-    <div className="w-full">
+    <div
+      className="w-full"
+      onClick={handleNavigateToMyPage}
+    >
       <div className="grid w-full auto-cols-max grid-flow-col items-start gap-4">
         <div
           className="ml-6 overflow-hidden rounded-full"
