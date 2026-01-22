@@ -73,4 +73,8 @@
   .border-primary {
     border-color: rgb(var(--color-primary));
   }
+
+  .bg-primary {
+    background-color: rgb(var(--color-primary));
+  }
 }
