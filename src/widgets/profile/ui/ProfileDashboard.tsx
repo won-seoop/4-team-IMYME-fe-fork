@@ -1,5 +1,6 @@
 'use client'
 
+import { ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { Avatar, Nickname, StatCards } from '@/entities/user'
@@ -17,9 +18,13 @@ const AVATAR_SIZE_PX = 60
 
 interface ProfileDashboardProps {
   navigateToMyPage?: boolean
+  showBackButton?: boolean
 }
 
-export function ProfileDashboard({ navigateToMyPage = true }: ProfileDashboardProps) {
+export function ProfileDashboard({
+  navigateToMyPage = true,
+  showBackButton = false,
+}: ProfileDashboardProps) {
   const router = useRouter()
 
   const handleNavigateToMyPage = () => {
@@ -30,28 +35,42 @@ export function ProfileDashboard({ navigateToMyPage = true }: ProfileDashboardPr
     router.push('/mypage')
   }
 
+  const handleBackButton = () => {
+    if (!showBackButton) return
+
+    router.back()
+  }
+
   return (
-    <div
-      className="w-full"
-      onClick={handleNavigateToMyPage}
-    >
-      <div className="grid w-full auto-cols-max grid-flow-col items-start gap-4">
-        <div
-          className="ml-6 overflow-hidden rounded-full"
-          style={{ width: AVATAR_SIZE_PX, height: AVATAR_SIZE_PX }}
-        >
-          <Avatar
-            avatar_src={DefaultAvatar}
-            size={AVATAR_SIZE_PX}
-          />
-        </div>
-        <Nickname nickname={userData.nickname} />
+    <div className="relative w-full">
+      <div
+        className={['absolute rounded-md p-1', showBackButton ? '' : 'invisible'].join(' ')}
+        onClick={handleBackButton}
+      >
+        <ChevronLeft />
       </div>
-      <StatCards
-        cardCount={userData.cardCount}
-        dates={userData.dates}
-        levelCount={userData.levelCount}
-      />
+      <div
+        className="w-full"
+        onClick={handleNavigateToMyPage}
+      >
+        <div className="grid w-full auto-cols-max grid-flow-col items-start gap-4">
+          <div
+            className="ml-10 overflow-hidden rounded-full"
+            style={{ width: AVATAR_SIZE_PX, height: AVATAR_SIZE_PX }}
+          >
+            <Avatar
+              avatar_src={DefaultAvatar}
+              size={AVATAR_SIZE_PX}
+            />
+          </div>
+          <Nickname nickname={userData.nickname} />
+        </div>
+        <StatCards
+          cardCount={userData.cardCount}
+          dates={userData.dates}
+          levelCount={userData.levelCount}
+        />
+      </div>
     </div>
   )
 }
