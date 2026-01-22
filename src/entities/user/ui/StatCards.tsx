@@ -11,7 +11,7 @@ interface StatCardsProps {
 
 export function StatCards({ cardCount, dates, levelCount }: StatCardsProps) {
   return (
-    <div className="mt-6 grid grid-cols-3 place-items-center">
+    <div className="mt-6 grid grid-cols-3 place-items-center px-3">
       <div className={DASHBOARD_CARD_CLASSNAME}>
         <p className={DASHBOARD_INFO_HEADING_CLASSNAME}>{cardCount}</p>
         <p className={DASHBOARD_INFO_BASE_CLASSNAME}>카드 수</p>
