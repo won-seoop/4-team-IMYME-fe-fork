@@ -6,7 +6,7 @@ import { Input } from '@/shared/ui/input'
 
 const IMAGE_SIZE_CLASS = 'h-[150px] w-[150px]'
 
-type ProfileImageProps = {
+type ProfileImageInputProps = {
   imageSrc: string | StaticImageData
   onChange: ChangeEventHandler<HTMLInputElement>
   acceptTypes: string
@@ -14,13 +14,13 @@ type ProfileImageProps = {
   inputId?: string
 }
 
-export function ProfileImage({
+export function ProfileImageInput({
   imageSrc,
   onChange,
   acceptTypes,
   errorMessage = null,
   inputId = 'profileImage',
-}: ProfileImageProps) {
+}: ProfileImageInputProps) {
   return (
     <div className="flex w-full flex-col items-center">
       <label

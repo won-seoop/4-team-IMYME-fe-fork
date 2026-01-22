@@ -9,13 +9,8 @@ export function useMenuModal() {
     setMenuOpen(nextOpen)
   }
 
-  const handleMenuClose = () => {
-    setMenuOpen(false)
-  }
-
   return {
     menuOpen,
     handleMenuOpenChange,
-    handleMenuClose,
   }
 }

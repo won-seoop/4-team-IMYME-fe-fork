@@ -2,23 +2,23 @@
 
 import { Menu } from 'lucide-react'
 
+import { MenuModal } from '@/features/header-menu'
 import { ProfileEditModal } from '@/features/profile-edit'
+import { useMenuModal } from '@/widgets/header/model/client/useMenuModal'
 import { useProfileEditModal } from '@/widgets/header/model/client/useProfileEditModal'
-import { MenuModal } from '@/widgets/menu'
-import { useMenuModal } from '@/widgets/menu/model/client/useMenuModal'
 
 type HeaderProps = {
   showMenu?: boolean
 }
 
 export function Header({ showMenu = true }: HeaderProps) {
+  const { menuOpen, handleMenuOpenChange } = useMenuModal()
   const { profileEditOpen, handleProfileEditOpenChange, handleProfileEditOpen } =
     useProfileEditModal()
-  const { menuOpen, handleMenuOpenChange, handleMenuClose } = useMenuModal()
 
-  const handleProfileEditOpenWithMenuClose = () => {
+  const handleProfileEditRequest = () => {
+    handleMenuOpenChange(false)
     handleProfileEditOpen()
-    handleMenuClose()
   }
 
   return (
@@ -34,7 +34,7 @@ export function Header({ showMenu = true }: HeaderProps) {
             }
             open={menuOpen}
             onOpenChange={handleMenuOpenChange}
-            onProfileEditOpen={handleProfileEditOpenWithMenuClose}
+            onClickProfileEdit={handleProfileEditRequest}
           />
           <ProfileEditModal
             open={profileEditOpen}

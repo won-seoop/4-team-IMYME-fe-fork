@@ -2,9 +2,7 @@
 
 import { type ReactNode } from 'react'
 
-import { LogoutButton } from '@/features/auth'
-import { HelpButton } from '@/features/help'
-import { ProfileEditButton } from '@/features/profile-edit'
+import { ProfileEditButton, LogoutButton, HelpButton } from '@/features/header-menu'
 import {
   Dialog,
   DialogContent,
@@ -20,10 +18,10 @@ type MenuModalProps = {
   trigger: ReactNode
   open: boolean
   onOpenChange: (open: boolean) => void
-  onProfileEditOpen: () => void
+  onClickProfileEdit: () => void
 }
 
-export function MenuModal({ trigger, open, onOpenChange, onProfileEditOpen }: MenuModalProps) {
+export function MenuModal({ trigger, open, onOpenChange, onClickProfileEdit }: MenuModalProps) {
   return (
     <Dialog
       open={open}
@@ -33,7 +31,11 @@ export function MenuModal({ trigger, open, onOpenChange, onProfileEditOpen }: Me
       <DialogContent className={MODAL_CONTENT_CLASS}>
         <DialogTitle>설정</DialogTitle>
         <DialogDescription></DialogDescription>
-        <ProfileEditButton onClick={onProfileEditOpen} />
+        <ProfileEditButton
+          type="button"
+          variant="modal_btn_primary"
+          onClick={onClickProfileEdit}
+        />
         <HelpButton />
         <LogoutButton />
       </DialogContent>

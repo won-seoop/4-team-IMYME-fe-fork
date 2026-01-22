@@ -1,9 +1,9 @@
 import {
-  ProfileImage,
+  ProfileImageInput,
   NicknameInput,
-  ProfileEditButton,
   useNicknameForm,
   useProfileImageForm,
+  ProfileEditTryButton,
 } from '@/features/profile-edit'
 import defaultAvatar from '@/shared/assets/images/default-avatar.svg'
 import {
@@ -28,13 +28,14 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
     imagePreview,
     handleFileChange,
     acceptTypes,
+    error: profileImageError,
     errorMessage: profileImageErrorMessage,
   } = useProfileImageForm()
   const {
     nickname,
     handleNicknameChange,
     handleNicknameBlur,
-    hasNicknameError,
+    error: nicknameError,
     errorMessage: nicknameErrorMessage,
   } = useNicknameForm()
 
@@ -50,22 +51,22 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
           <DialogTitle>프로필 수정하기</DialogTitle>
         </DialogHeader>
         <DialogDescription className={LABEL_CLASS}>프로필 이미지</DialogDescription>
-        <ProfileImage
+        <ProfileImageInput
           imageSrc={imagePreview ?? defaultAvatar}
           onChange={handleFileChange}
           acceptTypes={acceptTypes}
-          errorMessage={profileImageErrorMessage}
+          errorMessage={profileImageError ? profileImageErrorMessage : null}
         />
         <DialogDescription className={LABEL_CLASS}>닉네임</DialogDescription>
         <NicknameInput
           value={nickname}
           onChange={handleNicknameChange}
           onBlur={handleNicknameBlur}
-          helperMessage={hasNicknameError ? nicknameErrorMessage : null}
-          helperVariant={hasNicknameError ? 'error' : 'default'}
+          helperMessage={nicknameError ? nicknameErrorMessage : null}
+          helperVariant={nicknameError ? 'error' : 'default'}
         />
         <DialogFooter>
-          <ProfileEditButton onClick={handleProfileEdit} />
+          <ProfileEditTryButton onClick={handleProfileEdit} />
         </DialogFooter>
       </DialogContent>
     </Dialog>
