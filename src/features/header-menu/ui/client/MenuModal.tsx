@@ -1,10 +1,8 @@
 'use client'
 
-import { type ReactNode, useState } from 'react'
+import { type ReactNode } from 'react'
 
-import { LogoutButton } from '@/features/auth'
-import { HelpButton } from '@/features/help'
-import { ProfileEditButton, ProfileEditModal } from '@/features/profile'
+import { ProfileEditButton, LogoutButton, HelpButton } from '@/features/header-menu'
 import {
   Dialog,
   DialogContent,
@@ -18,32 +16,25 @@ const MODAL_CONTENT_CLASS =
 
 type MenuModalProps = {
   trigger: ReactNode
-  children?: ReactNode
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onClickProfileEdit: () => void
 }
 
-export function MenuModal({ trigger }: MenuModalProps) {
-  const [open, setOpen] = useState(false)
-
-  const handleMenuOpenChange = (nextOpen: boolean) => {
-    setOpen(nextOpen)
-  }
-
-  const handleCloseMenu = () => {
-    setOpen(false)
-  }
-
+export function MenuModal({ trigger, open, onOpenChange, onClickProfileEdit }: MenuModalProps) {
   return (
     <Dialog
       open={open}
-      onOpenChange={handleMenuOpenChange}
+      onOpenChange={onOpenChange}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className={MODAL_CONTENT_CLASS}>
         <DialogTitle>설정</DialogTitle>
         <DialogDescription></DialogDescription>
-        <ProfileEditModal
-          trigger={<ProfileEditButton />}
-          onClose={handleCloseMenu}
+        <ProfileEditButton
+          type="button"
+          variant="modal_btn_primary"
+          onClick={onClickProfileEdit}
         />
         <HelpButton />
         <LogoutButton />
