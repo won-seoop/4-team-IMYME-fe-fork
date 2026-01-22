@@ -65,21 +65,7 @@ jobs:
       - name: Build
         run: pnpm next build
 
-      # 9. 디버깅 - 빌드 결과 확인
-      - name: Debug - Check build output
-        run: |
-          echo "=== Current directory ==="
-          pwd
-          echo "=== Root directory contents ==="
-          ls -la
-          echo "=== .next directory ==="
-          ls -la .next/ || echo ".next NOT FOUND"
-          echo "=== Find all possible build folders ==="
-          find . -type d -name ".next" 2>/dev/null
-          find . -type d -name "out" 2>/dev/null
-          find . -type d -name "build" 2>/dev/null
-
-      # 10. 이전 아티팩트 삭제
+      # 9. 이전 아티팩트 삭제
       - name: Delete old artifacts
         if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
         uses: actions/github-script@v7
@@ -99,15 +85,25 @@ jobs:
               }
             }
 
+      # 10. 배포용 파일 준비
+      - name: Prepare deployment files
+        if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
+        run: |
+          mkdir -p deploy
+          cp -r .next deploy/
+          cp package.json deploy/
+          cp pnpm-lock.yaml deploy/
+
       # 11. 빌드 결과 업로드
       - name: Upload artifact
         if: github.ref == 'refs/heads/dev' || github.event.pull_request.merged == true
         uses: actions/upload-artifact@v4
         with:
           name: frontend-dev-latest
-          path: .next/
+          path: deploy/
           retention-days: 15
           overwrite: true
+          include-hidden-files: true
 
   ci-notify-success:
     needs: ci
@@ -159,10 +155,12 @@ jobs:
           name: frontend-dev-latest
           path: ./frontend-build
 
-      # 3. 서버 전송
+      # 3. 서버 전송 (압축해서 빠르게)
       - name: Copy artifact to dev server
         run: |
-          scp -i ~/.ssh/id_rsa -r ./frontend-build/* ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend/build
+          tar -czf frontend-build.tar.gz -C ./frontend-build .
+          scp -i ~/.ssh/id_rsa frontend-build.tar.gz ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend/
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'rm -rf /home/ubuntu/mine/frontend/build/* && tar -xzf /home/ubuntu/mine/frontend/frontend-build.tar.gz -C /home/ubuntu/mine/frontend/build && rm /home/ubuntu/mine/frontend/frontend-build.tar.gz'
 
       # 4. 배포 (release/current 구조)
       - name: Deploy to Dev Server
@@ -181,16 +179,25 @@ jobs:
 
           mkdir -p "$RELEASE_DIR" "$LOG_DIR"
 
-          # 1. 빌드 아티팩트 이동
-          cp -r $APP_DIR/build/. "$RELEASE_DIR"/
+          # 1. 빌드 아티팩트 복사 (.next, package.json, pnpm-lock.yaml)
+          cp -r $APP_DIR/build/.next "$RELEASE_DIR/"
+          cp $APP_DIR/build/package.json "$RELEASE_DIR/"
+          cp $APP_DIR/build/pnpm-lock.yaml "$RELEASE_DIR/"
 
-          # 2. current 심볼릭 링크 교체
-          ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
+          # 2. 의존성 설치
+          cd "$RELEASE_DIR"
+          pnpm install --prod --ignore-scripts --force
 
-          # 3. 이전 release 3개만 유지
+
+          # 3. current 심볼릭 링크 교체
+          rm -rf "$CURRENT_LINK"
+          ln -s "$RELEASE_DIR" "$CURRENT_LINK"
+
+          # 4. 이전 release 3개만 유지
           ls -1dt "$RELEASES_DIR"/* | tail -n +4 | xargs -r rm -rf
 
-          # 4. PM2로 프론트 서버 재시작
+          # 5. PM2로 프론트 서버 재시작
+          cd "$CURRENT_LINK"
           pm2 delete frontend || true
           pm2 start npx --name frontend -- next start -p 3000
 
