@@ -10,15 +10,6 @@ type AuthState = {
 
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
-  setAccessToken: () => {
-    set((token) => ({
-      accessToken: token,
-    }))
-  },
-  //  (token) => set({ accessToken: token }),
-  clearAccessToken: () => {
-    set(() => ({
-      accessToken: null,
-    }))
-  },
+  setAccessToken: (token) => set({ accessToken: token }),
+  clearAccessToken: () => set({ accessToken: null }),
 }))
