@@ -105,4 +105,14 @@
   .text-primary {
     color: rgb(var(--color-primary));
   }
+
+  .filtering-tab-frame {
+    background-color: rgb(var(--color-background));
+    margin: 0 auto;
+    min-height: 50vh;
+    max-height: 60vh;
+    width: 100%;
+    max-width: var(--frame-max-width);
+    min-width: var(--frame-min-width);
+  }
 }
