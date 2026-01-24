@@ -1,3 +1,4 @@
+import { useProfileImage } from '@/entities/user/model/useUserStore'
 import {
   ProfileImageInput,
   NicknameInput,
@@ -41,6 +42,10 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
 
   const handleProfileEdit = () => {}
 
+  const storeProfileImageUrl = useProfileImage()
+
+  // ✅ 우선순위: (미리보기 props) > (store) > (기본)
+
   return (
     <Dialog
       open={open}
@@ -52,7 +57,13 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
         </DialogHeader>
         <DialogDescription className={LABEL_CLASS}>프로필 이미지</DialogDescription>
         <ProfileImageInput
-          imageSrc={imagePreview ?? defaultAvatar}
+          imageSrc={
+            imagePreview
+              ? imagePreview
+              : storeProfileImageUrl
+                ? storeProfileImageUrl
+                : defaultAvatar
+          }
           onChange={handleFileChange}
           acceptTypes={acceptTypes}
           errorMessage={profileImageError ? profileImageErrorMessage : null}
