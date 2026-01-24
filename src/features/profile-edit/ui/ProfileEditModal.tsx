@@ -34,6 +34,7 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
   } = useProfileImageForm()
   const {
     nickname,
+    storeNickname,
     handleNicknameChange,
     handleNicknameBlur,
     error: nicknameError,
@@ -71,6 +72,7 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
         <DialogDescription className={LABEL_CLASS}>닉네임</DialogDescription>
         <NicknameInput
           value={nickname}
+          placeholder={storeNickname}
           onChange={handleNicknameChange}
           onBlur={handleNicknameBlur}
           helperMessage={nicknameError ? nicknameErrorMessage : null}

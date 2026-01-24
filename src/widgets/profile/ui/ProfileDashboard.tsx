@@ -4,16 +4,7 @@ import { ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { Avatar, Nickname, StatCards } from '@/entities/user'
-import { DefaultAvatar } from '@/shared'
 import { useProfile } from '@/entities/user/model/useUserStore'
-
-const userData = {
-  nickname: 'User',
-  avatar: DefaultAvatar,
-  cardCount: 0,
-  dates: 1,
-  levelCount: 0,
-}
 
 const AVATAR_SIZE_PX = 60
 
