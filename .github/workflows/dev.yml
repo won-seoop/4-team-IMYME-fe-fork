@@ -219,6 +219,8 @@ jobs:
 
       # 3. 서버 전송 (압축해서 빠르게)
       - name: Copy artifact to dev server
+        id: copy
+        continue-on-error: true
         run: |
           tar -czf frontend-build.tar.gz -C ./frontend-build .
           scp -i ~/.ssh/id_rsa frontend-build.tar.gz ubuntu@${{ secrets.DEV_SERVER_HOST }}:/home/ubuntu/mine/frontend/
@@ -226,8 +228,11 @@ jobs:
 
       # 4. 배포 (release/current 구조)
       - name: Deploy to Dev Server
+        id: deploy
+        if: steps.copy.outcome == 'success'
+        continue-on-error: true
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'bash -s' <<'EOF'
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEV_SERVER_HOST }} 'bash -s' <<'EOF' 2>&1 | tee deploy-output.txt
           set -e
 
           APP_DIR=/home/ubuntu/mine/frontend
@@ -283,7 +288,41 @@ jobs:
 
           EOF
 
-      # 5️. 보안 그룹에서 IP 제거 (항상 실행)
+      # 4-1. CD 실패 체크 및 에러 메시지 수집
+      - name: Check CD failures and collect errors
+        id: check_cd_failures
+        if: always()
+        run: |
+          ERRORS=""
+          if [ "${{ steps.copy.outcome }}" == "failure" ]; then
+            ERRORS="${ERRORS}🔴 **서버 전송 실패**\n파일 전송 중 오류가 발생했습니다.\n\n"
+          fi
+          if [ "${{ steps.deploy.outcome }}" == "failure" ]; then
+            ERRORS="${ERRORS}🔴 **배포 실패**\n\`\`\`\n$(tail -50 deploy-output.txt 2>/dev/null || echo '로그 없음')\n\`\`\`\n\n"
+          fi
+
+          if [ -n "$ERRORS" ]; then
+            echo "has_errors=true" >> $GITHUB_OUTPUT
+            echo "error_message<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$ERRORS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "has_errors=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 4-2. CD 실패 시 Discord 알림 (에러 메시지 포함)
+      - name: Discord CD failure with details
+        if: steps.check_cd_failures.outputs.has_errors == 'true'
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: failure
+          title: '🔴 Frontend Deploy Failed'
+          description: ${{ steps.check_cd_failures.outputs.error_message }}
+          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 개발 서버 배포 실패!'
+          color: 0xff0000
+
+      # 5️. 보안 그룹에서 IP 제거 (항상 실행 - 에러 체크보다 먼저)
       - name: Remove IP from Security Group
         if: always()
         run: |
@@ -296,6 +335,11 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ap-northeast-2
+
+      # 6. 에러가 있으면 워크플로우 실패 처리
+      - name: Fail if CD errors
+        if: steps.check_cd_failures.outputs.has_errors == 'true'
+        run: exit 1
 
   cd-notify-success:
     needs: cd
@@ -310,17 +354,3 @@ jobs:
           title: '🟢 Frontend Deploy Success'
           content: '프론트엔드 개발 서버 배포 완료!'
           color: 0x00ff00
-
-  cd-notify-failure:
-    needs: cd
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Discord CD failure
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: failure
-          title: '🔴 Frontend Deploy Failed'
-          content: '<@&${{ secrets.FRONTEND_ROLE_ID }}> 프론트엔드 개발 서포 배포 실패!'
-          color: 0xff0000
