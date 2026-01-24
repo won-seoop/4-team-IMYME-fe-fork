@@ -3,7 +3,9 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
-import { useAuthStore } from '@/features/auth'
+import { UserProfile } from '@/entities/user'
+import { useSetProfile } from '@/entities/user/model/useUserStore'
+import { useSetAccessToken } from '@/features/auth/model/client/useAuthStore'
 
 const DEVICE_UUID_STORAGE_KEY = 'device_uuid'
 const KAKAO_CODE_QUERY_KEY = 'code'
@@ -37,7 +39,9 @@ export const createUuidForRegex = (): string => {
 export function KakaoCallbackPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const setAccessToken = useAuthStore((s) => s.setAccessToken)
+
+  const setAccessToken = useSetAccessToken()
+  const setProfile = useSetProfile()
 
   useEffect(() => {
     const run = async () => {
@@ -74,16 +78,21 @@ export function KakaoCallbackPage() {
         return
       }
 
-      const data = (await res.json()) as { access_token: string; device_uuid: string }
+      const data = (await res.json()) as {
+        access_token: string
+        device_uuid: string
+        user: UserProfile
+      }
 
       // ✅ 3) access token → zustand
       setAccessToken(data.access_token)
+      setProfile(data.user)
 
       router.replace(DEFAULT_REDIRECT_PATH)
     }
 
     void run()
-  }, [router, searchParams, setAccessToken])
+  }, [router, searchParams, setAccessToken, setProfile])
 
   return null
 }

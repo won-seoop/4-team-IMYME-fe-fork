@@ -1,15 +1,39 @@
 'use client'
 
 import { create } from 'zustand'
+import { combine } from 'zustand/middleware'
+import { immer } from 'zustand/middleware/immer'
 
-type AuthState = {
-  accessToken: string | null
-  setAccessToken: (token: string | null) => void
-  clearAccessToken: () => void
+export const useAuthStore = create(
+  immer(
+    combine({ accessToken: '' }, (set) => ({
+      actions: {
+        setAccessToken: (token: string) => {
+          set((state) => {
+            state.accessToken = token
+          })
+        },
+        clearAccessToken: () => {
+          set((state) => {
+            state.accessToken = ''
+          })
+        },
+      },
+    })),
+  ),
+)
+
+export const useAccessToken = () => {
+  const accessToken = useAuthStore((store) => store.accessToken)
+  return accessToken
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  accessToken: null,
-  setAccessToken: (token) => set({ accessToken: token }),
-  clearAccessToken: () => set({ accessToken: null }),
-}))
+export const useSetAccessToken = () => {
+  const setAccessToken = useAuthStore((store) => store.actions.setAccessToken)
+  return setAccessToken
+}
+
+export const useClearAccesstoken = () => {
+  const clearAccessToken = useAuthStore((store) => store.actions.clearAccessToken)
+  return clearAccessToken
+}

@@ -28,21 +28,28 @@ export async function POST(req: NextRequest) {
       },
     )
 
-    console.log('[exchange] backend raw response:', response)
+    console.log('[exchange] backend raw response user:', response.data.data.user)
     const access_token = response.data?.data?.access_token
     const refresh_token = response.data?.data?.refresh_token
     const user = response.data?.data?.user
 
-    console.log(`user nickname: ${user.nickname}`)
-    console.log(`user profile image: ${user.profile_image_url}`)
-
-    if (!access_token) {
+    if (!access_token || !user) {
       return NextResponse.json({ message: 'invalid_response' }, { status: 502 })
     }
 
     const res = NextResponse.json({
       access_token,
       device_uuid: deviceUuid,
+      user: {
+        nickname: user.nickname,
+        profileImageUrl: user.profile_image_url,
+        level: user.level,
+        totalCardCount: user.total_card_count,
+        activeCardCount: user.active_card_count,
+        consecutiveDays: user.consecutive_days,
+        winCount: user.win_count,
+        isNewUser: user.is_new_user,
+      },
     })
 
     if (refresh_token) {
