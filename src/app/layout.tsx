@@ -4,7 +4,6 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
 import './globals.css'
-import { AuthBootstrap } from '@/features/provider/ui/AuthBootStrap'
 
 export const metadata: Metadata = {
   title: 'MINE',
@@ -20,7 +19,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko">
       <body className="app-shell">
         <div className="app-frame">
-          <AuthBootstrap />
           <Provider>{children}</Provider>
         </div>
       </body>

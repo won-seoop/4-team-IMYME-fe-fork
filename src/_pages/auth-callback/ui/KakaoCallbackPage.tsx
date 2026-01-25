@@ -70,7 +70,7 @@ export function KakaoCallbackPage() {
       const res = await fetch('/api/auth/kakao/exchange', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, device_uuid: deviceUuid }),
+        body: JSON.stringify({ code, deviceUuid }),
       })
 
       if (!res.ok) {
@@ -79,13 +79,13 @@ export function KakaoCallbackPage() {
       }
 
       const data = (await res.json()) as {
-        access_token: string
-        device_uuid: string
+        accessToken: string
+        deviceUuid: string
         user: UserProfile
       }
 
       // ✅ 3) access token → zustand
-      setAccessToken(data.access_token)
+      setAccessToken(data.accessToken)
       setProfile(data.user)
 
       router.replace(DEFAULT_REDIRECT_PATH)
