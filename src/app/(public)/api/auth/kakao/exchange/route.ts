@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   console.log(`code: ${code}`)
   console.log(`deviceUuid: ${deviceUuid}`)
 
-  const redirectUri = process.env.NEXT_KAKAO_REDIRECT_URI ?? ''
+  const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI ?? ''
 
   console.log(redirectUri)
   // ✅ 백엔드에 교환 요청
@@ -49,11 +49,9 @@ export async function POST(req: NextRequest) {
         nickname: user.nickname,
         profileImageUrl: user.profileImageUrl,
         level: user.level,
-        totalCardCount: user.totalCardCount,
         activeCardCount: user.activeCardCount,
         consecutiveDays: user.consecutiveDays,
         winCount: user.winCount,
-        isNewUser: user.isNewUser,
       },
     })
 
