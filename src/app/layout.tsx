@@ -1,5 +1,8 @@
+import { Provider } from '@/features/provider'
+
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -15,7 +18,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body className="app-shell">
-        <div className="app-frame">{children}</div>
+        <div className="app-frame">
+          <Provider>{children}</Provider>
+        </div>
       </body>
     </html>
   )

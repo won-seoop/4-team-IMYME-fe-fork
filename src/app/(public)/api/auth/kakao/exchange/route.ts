@@ -6,26 +6,26 @@ import { httpClient } from '@/shared'
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
   const code = body.code as string | undefined
-  const deviceUuid = body.device_uuid as string | undefined
+  const deviceUuid = body.deviceUuid as string | undefined
 
   if (!code || !deviceUuid) {
     return NextResponse.json({ message: 'missing_params' }, { status: 400 })
   }
 
-  const redirectUri = process.env.NEXT_KAKAO_REDIRECT_URI ?? ''
-
   console.log(`code: ${code}`)
   console.log(`deviceUuid: ${deviceUuid}`)
-  console.log(`redirectUri: ${redirectUri}`)
 
+  const redirectUri = process.env.NEXT_KAKAO_REDIRECT_URI ?? ''
+
+  console.log(redirectUri)
   // ✅ 백엔드에 교환 요청
   try {
     const response = await httpClient.post(
       '/auth/oauth/kakao',
       {
         code,
-        redirect_uri: redirectUri,
-        device_uuid: deviceUuid,
+        redirectUri,
+        deviceUuid,
       },
       {
         headers: { 'Content-Type': 'application/json' },
@@ -33,20 +33,32 @@ export async function POST(req: NextRequest) {
     )
 
     console.log('[exchange] backend raw response:', response)
-    const access_token = response.data?.data?.access_token
-    const refresh_token = response.data?.data?.refresh_token
+    console.log('[exchange] backend raw response user:', response.data.data.user)
+    const accessToken = response.data?.data?.accessToken
+    const refreshToken = response.data?.data?.refreshToken
+    const user = response.data?.data?.user
 
-    if (!access_token) {
+    if (!accessToken || !user) {
       return NextResponse.json({ message: 'invalid_response' }, { status: 502 })
     }
 
     const res = NextResponse.json({
-      access_token,
-      device_uuid: deviceUuid,
+      accessToken,
+      deviceUuid,
+      user: {
+        nickname: user.nickname,
+        profileImageUrl: user.profileImageUrl,
+        level: user.level,
+        totalCardCount: user.totalCardCount,
+        activeCardCount: user.activeCardCount,
+        consecutiveDays: user.consecutiveDays,
+        winCount: user.winCount,
+        isNewUser: user.isNewUser,
+      },
     })
 
-    if (refresh_token) {
-      res.cookies.set('refresh_token', String(refresh_token), {
+    if (refreshToken) {
+      res.cookies.set('refresh_token', String(refreshToken), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
