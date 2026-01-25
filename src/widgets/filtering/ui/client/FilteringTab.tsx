@@ -1,10 +1,10 @@
 'use client'
 
-import { CategoryItemType } from '@/entities/category'
+import { useState } from 'react'
+
 import { KeywordItemType } from '@/entities/keyword'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CategoryList } from '@/features/filtering'
-import { useCategoryList } from '@/features/filtering'
+import { CategoryList, KeywordList, useCategoryList, useKeywordList } from '@/features/filtering'
 import { Button } from '@/shared/ui/button'
 import {
   DrawerContent,
@@ -14,29 +14,17 @@ import {
   DrawerTitle,
 } from '@/shared/ui/drawer'
 
-const keywordData: KeywordItemType[] = [
-  {
-    id: 1,
-    keywordName: 'Spring Bean',
-  },
-  {
-    id: 2,
-    keywordName: 'JPA',
-  },
-  {
-    id: 3,
-    keywordName: 'DI',
-  },
-  {
-    id: 4,
-    keywordName: 'Security Filter',
-  },
-]
 export function FilteringTab() {
   const accessToken = useAccessToken()
   const categoryData = useCategoryList(accessToken)
-  const handleCategoryClick = (category: CategoryItemType) => {
-    console.log('Selected category', category)
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
+  const keywordData = useKeywordList({ accessToken, categoryId: selectedCategoryId })
+
+  const handleCategoryClick = (categoryId: number) => {
+    setSelectedCategoryId(categoryId)
+  }
+  const handleKeywordClick = (keyword: KeywordItemType) => {
+    console.log('Selected Keyword', keyword)
   }
 
   return (
@@ -53,18 +41,12 @@ export function FilteringTab() {
         />
         <div className="bg-secondary mx-3 min-h-full w-0.5"></div>
         <div className="h-full overflow-y-scroll">
-          {keywordData.length > 0
-            ? keywordData.map((keyword: KeywordItemType) => {
-                return (
-                  <div
-                    key={keyword.id}
-                    className="pt-2"
-                  >
-                    <p className="text-md ml-4 font-semibold">{keyword.keywordName}</p>
-                  </div>
-                )
-              })
-            : null}
+          {keywordData.length > 0 ? (
+            <KeywordList
+              keywords={keywordData}
+              onKeywordClick={handleKeywordClick}
+            />
+          ) : null}
         </div>
       </div>
       <DrawerFooter className="mt-0 flex items-center">

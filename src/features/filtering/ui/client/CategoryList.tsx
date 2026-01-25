@@ -4,7 +4,7 @@ import { CategoryItem, CategoryItemType } from '@/entities/category'
 
 type CategoryListProps = {
   categories: CategoryItemType[]
-  onCategoryClick: (category: CategoryItemType) => void
+  onCategoryClick: (categoryId: number) => void
 }
 
 export function CategoryList({ categories, onCategoryClick }: CategoryListProps) {

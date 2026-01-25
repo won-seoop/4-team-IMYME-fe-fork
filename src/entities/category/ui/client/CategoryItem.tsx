@@ -4,14 +4,14 @@ import type { CategoryItemType } from '@/entities/category'
 
 type CategoryRowProps = {
   category: CategoryItemType
-  onClick: (category: CategoryItemType) => void
+  onClick: (categoryId: number) => void
 }
 
 export function CategoryItem({ category, onClick }: CategoryRowProps) {
   return (
     <div
       className="pt-2"
-      onClick={() => onClick(category)}
+      onClick={() => onClick(category.id)}
       role="button"
       tabIndex={0}
     >
