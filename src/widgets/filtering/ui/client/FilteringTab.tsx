@@ -51,7 +51,7 @@ export function FilteringTab() {
     <DrawerContent className="filtering-tab-frame">
       <DrawerHeader>
         <DrawerTitle>카테고리 선택</DrawerTitle>
-        <DrawerDescription className="flex min-h-5 items-center gap-1">
+        <div className="flex min-h-5 items-center gap-1">
           {selectedCategory ? selectedCategory.categoryName : ''}
           {selectedKeyword ? (
             <>
@@ -65,16 +65,13 @@ export function FilteringTab() {
             className="ml-auto flex items-center gap-2"
             onClick={handleInitButtonClick}
           >
-            <p>필터 초기화</p>
+            필터 초기화
             <RotateCcw size={16} />
           </div>
-        </DrawerDescription>
+        </div>
       </DrawerHeader>
       <div className="bg-secondary mt-0 mb-0 h-0.5 w-full"></div>
-      <div
-        className="flex h-full flex-1 pb-0"
-        ml-3
-      >
+      <div className="flex h-full flex-1 pb-0">
         <CategoryList
           isLoading={categoryLoading}
           error={categoryError}
