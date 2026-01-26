@@ -4,15 +4,7 @@ import { ChevronLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { Avatar, Nickname, StatCards } from '@/entities/user'
-import { DefaultAvatar } from '@/shared'
-
-const userData = {
-  nickname: 'User',
-  avatar: DefaultAvatar,
-  cardCount: 0,
-  dates: 1,
-  levelCount: 0,
-}
+import { useProfile } from '@/entities/user/model/useUserStore'
 
 const AVATAR_SIZE_PX = 60
 
@@ -26,6 +18,8 @@ export function ProfileDashboard({
   showBackButton = false,
 }: ProfileDashboardProps) {
   const router = useRouter()
+
+  const profile = useProfile()
 
   const handleNavigateToMyPage = () => {
     if (!navigateToMyPage) {
@@ -59,16 +53,16 @@ export function ProfileDashboard({
             style={{ width: AVATAR_SIZE_PX, height: AVATAR_SIZE_PX }}
           >
             <Avatar
-              avatar_src={DefaultAvatar}
+              avatar_src={profile.profileImageUrl}
               size={AVATAR_SIZE_PX}
             />
           </div>
-          <Nickname nickname={userData.nickname} />
+          <Nickname nickname={profile.nickname} />
         </div>
         <StatCards
-          cardCount={userData.cardCount}
-          dates={userData.dates}
-          levelCount={userData.levelCount}
+          cardCount={profile.activeCardCount}
+          dates={profile.consecutiveDays}
+          levelCount={profile.winCount}
         />
       </div>
     </div>

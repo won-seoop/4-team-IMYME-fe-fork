@@ -5,6 +5,7 @@ import type { ChangeEventHandler, FocusEventHandler } from 'react'
 
 type NicknameInputProps = {
   value: string
+  placeholder: string
   onChange: ChangeEventHandler<HTMLInputElement>
   onBlur?: FocusEventHandler<HTMLInputElement>
   helperMessage?: string | null
@@ -13,6 +14,7 @@ type NicknameInputProps = {
 
 export function NicknameInput({
   value,
+  placeholder,
   onChange,
   onBlur,
   helperMessage = null,
@@ -22,7 +24,7 @@ export function NicknameInput({
     <>
       <Input
         type="text"
-        placeholder="닉네임을 입력해주세요"
+        placeholder={placeholder}
         value={value}
         onChange={onChange}
         onBlur={onBlur}

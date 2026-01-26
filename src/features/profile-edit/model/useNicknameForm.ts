@@ -1,5 +1,6 @@
 import { type ChangeEvent, type FocusEvent, useState } from 'react'
 
+import { useNickname } from '@/entities/user/model/useUserStore'
 import { validateNickname } from '@/features/profile-edit'
 
 const ERROR_MESSAGES: Record<'too-short' | 'too-long', string> = {
@@ -8,6 +9,7 @@ const ERROR_MESSAGES: Record<'too-short' | 'too-long', string> = {
 }
 
 export function useNicknameForm() {
+  const storeNickname = useNickname()
   const [nickname, setNickname] = useState('')
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -38,6 +40,7 @@ export function useNicknameForm() {
 
   return {
     nickname,
+    storeNickname,
     handleNicknameChange,
     handleNicknameBlur,
     error,
