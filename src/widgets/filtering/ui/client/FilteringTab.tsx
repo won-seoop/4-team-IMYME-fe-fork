@@ -8,13 +8,7 @@ import { KeywordItemType } from '@/entities/keyword'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { CategoryList, KeywordList, useCategoryList, useKeywordList } from '@/features/filtering'
 import { Button } from '@/shared/ui/button'
-import {
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/shared/ui/drawer'
+import { DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/shared/ui/drawer'
 
 export function FilteringTab() {
   const accessToken = useAccessToken()
