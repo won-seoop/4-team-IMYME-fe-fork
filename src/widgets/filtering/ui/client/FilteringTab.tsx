@@ -1,7 +1,9 @@
 'use client'
 
+import { ChevronRight, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 
+import { CategoryItemType } from '@/entities/category'
 import { KeywordItemType } from '@/entities/keyword'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { CategoryList, KeywordList, useCategoryList, useKeywordList } from '@/features/filtering'
@@ -21,38 +23,66 @@ export function FilteringTab() {
     isLoading: categoryLoading,
     error: categoryError,
   } = useCategoryList(accessToken)
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<CategoryItemType | null>(null)
+  const [selectedKeyword, setSelectedKeyword] = useState<KeywordItemType | null>(null)
   const {
     data: keywordData = [],
     isLoading: keywordLoading,
     error: keywordError,
   } = useKeywordList({
     accessToken,
-    categoryId: selectedCategoryId,
+    categoryId: selectedCategory ? selectedCategory.id : null,
   })
 
-  const handleCategoryClick = (categoryId: number) => {
-    setSelectedCategoryId(categoryId)
+  const handleCategoryClick = (category: CategoryItemType) => {
+    setSelectedCategory(category)
+    if (selectedKeyword) setSelectedKeyword(null)
   }
   const handleKeywordClick = (keyword: KeywordItemType) => {
-    console.log('Selected Keyword', keyword)
+    setSelectedKeyword(keyword)
+  }
+
+  const handleInitButtonClick = () => {
+    if (selectedCategory) setSelectedCategory(null)
+    if (selectedKeyword) setSelectedKeyword(null)
   }
 
   return (
     <DrawerContent className="filtering-tab-frame">
       <DrawerHeader>
         <DrawerTitle>카테고리 선택</DrawerTitle>
-        <DrawerDescription></DrawerDescription>
+        <DrawerDescription className="flex min-h-5 items-center gap-1">
+          {selectedCategory ? selectedCategory.categoryName : ''}
+          {selectedKeyword ? (
+            <>
+              <ChevronRight size={16} />
+              {selectedKeyword.keywordName}
+            </>
+          ) : (
+            ''
+          )}
+          <div
+            className="ml-auto flex items-center gap-2"
+            onClick={handleInitButtonClick}
+          >
+            <p>필터 초기화</p>
+            <RotateCcw size={16} />
+          </div>
+        </DrawerDescription>
       </DrawerHeader>
       <div className="bg-secondary mt-0 mb-0 h-0.5 w-full"></div>
-      <div className="flex h-full flex-1 pb-0">
+      <div
+        className="flex h-full flex-1 pb-0"
+        ml-3
+      >
         <CategoryList
           isLoading={categoryLoading}
           error={categoryError}
           categories={categoryData}
           onCategoryClick={handleCategoryClick}
+          selectedCategoryId={selectedCategory ? selectedCategory.id : null}
         />
-        <div className="bg-secondary mx-3 min-h-full w-0.5"></div>
+        <div className="bg-secondary ml-2 min-h-full w-0.5"></div>
         <div className="h-full overflow-y-scroll">
           {keywordData.length > 0 ? (
             <KeywordList
@@ -60,9 +90,12 @@ export function FilteringTab() {
               error={keywordError}
               keywords={keywordData}
               onKeywordClick={handleKeywordClick}
+              selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
             />
           ) : (
-            <p className="text-center">카테고리를 선택해 주세요.</p>
+            <div className="pt-2">
+              <p className="text-md ml-4 font-semibold">카테고리를 선택해 주세요.</p>
+            </div>
           )}
         </div>
       </div>

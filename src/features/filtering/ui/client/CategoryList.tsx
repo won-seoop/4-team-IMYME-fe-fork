@@ -6,10 +6,15 @@ type CategoryListProps = {
   isLoading: boolean
   error: Error | null
   categories: CategoryItemType[]
-  onCategoryClick: (categoryId: number) => void
+  onCategoryClick: (category: CategoryItemType) => void
+  selectedCategoryId: number | null
 }
 
-export function CategoryList({ categories, onCategoryClick }: CategoryListProps) {
+export function CategoryList({
+  categories,
+  onCategoryClick,
+  selectedCategoryId,
+}: CategoryListProps) {
   return (
     <div className="h-full overflow-y-scroll">
       {categories.map((category) => (
@@ -17,6 +22,7 @@ export function CategoryList({ categories, onCategoryClick }: CategoryListProps)
           key={category.id}
           category={category}
           onClick={onCategoryClick}
+          isSelected={selectedCategoryId === category.id}
         />
       ))}
     </div>

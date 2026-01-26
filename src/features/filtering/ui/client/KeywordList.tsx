@@ -6,9 +6,10 @@ type KeywordListProps = {
   error: Error | null
   keywords: KeywordItemType[]
   onKeywordClick: (keyword: KeywordItemType) => void
+  selectedKeywordId: number | null
 }
 
-export function KeywordList({ keywords, onKeywordClick }: KeywordListProps) {
+export function KeywordList({ keywords, onKeywordClick, selectedKeywordId }: KeywordListProps) {
   return (
     <div className="h-full overflow-y-scroll">
       {keywords.length > 0
@@ -17,6 +18,7 @@ export function KeywordList({ keywords, onKeywordClick }: KeywordListProps) {
               key={keyword.id}
               keyword={keyword}
               onClick={onKeywordClick}
+              isSelected={selectedKeywordId === keyword.id}
             />
           ))
         : null}

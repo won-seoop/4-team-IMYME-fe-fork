@@ -2,14 +2,17 @@ import { KeywordItemType } from '../model/keywordItem'
 
 interface KeywordItemProps {
   keyword: KeywordItemType
-  onClick: (keyword: KeywordItemType) => void
+  onClick: (keywordId: KeywordItemType) => void
+  isSelected?: boolean
 }
 
-export function KeywordItem({ keyword, onClick }: KeywordItemProps) {
+export function KeywordItem({ keyword, onClick, isSelected = false }: KeywordItemProps) {
+  const selectedClassName = isSelected ? ' w-full text-primary' : ''
+
   return (
     <div
       key={keyword.id}
-      className="pt-2"
+      className={`pt-2 ${selectedClassName}`}
     >
       <p
         className="text-md ml-4 font-semibold"
