@@ -101,7 +101,7 @@ jobs:
           NEXT_PUBLIC_KAKAO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_KAKAO_REDIRECT_URI }}
           NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
           NODE_ENV: ${{ secrets.NODE_ENV }}
-          NEXT_PUBLIC_SERVER_URL : ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
 
         run: pnpm next build
 
@@ -321,7 +321,29 @@ jobs:
 
           EOF
 
-      # 5️. 보안 그룹에서 IP 제거 (항상 실행)
+      # 5. 배포 후 스모크 테스트
+      - name: Post-deploy Smoke Test
+        run: |
+          set -euo pipefail
+
+          BASE_URL="${{ secrets.DEV_BASE_URL }}"
+
+          echo "🔎 Smoke 1) Health check: ${BASE_URL}/api/health"
+          curl -fsS "${BASE_URL}/api/health" >/dev/null
+
+          echo "🔎 Smoke 2) Main page (follow redirect) : ${BASE_URL}/"
+          curl -fsSL -o /tmp/home.html "${BASE_URL}/" >/dev/null
+
+          # HTML인지 최소 확인(502/JSON/리다이렉트 루프 같은 경우 걸러냄)
+          grep -qi "<html" /tmp/home.html || {
+            echo "❌ Main page is not HTML"
+            head -n 40 /tmp/home.html || true
+            exit 1
+          }
+
+          echo "✅ Frontend smoke tests passed"
+
+      # 6. 보안 그룹에서 IP 제거 (항상 실행)
       - name: Remove IP from Security Group
         if: always()
         run: |
