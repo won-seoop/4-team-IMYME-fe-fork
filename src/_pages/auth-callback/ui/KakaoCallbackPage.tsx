@@ -103,10 +103,9 @@ export function KakaoCallbackPage() {
         const profileResponse = await httpClient.get('/users/me', {
           headers: {
             Authorization: `Bearer ${data.accessToken}`,
-            'Cache-Control': 'no-store',
-            'Content-Type': 'application/json',
           },
         })
+        console.log(profileResponse)
         const profile = profileResponse.data?.data
 
         if (!profile) {
