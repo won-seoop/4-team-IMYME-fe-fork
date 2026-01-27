@@ -322,7 +322,7 @@ jobs:
           EOF
 
       # 5. 배포 후 스모크 테스트
-      - name: Post-deploy Smoke Test (Frontend via Nginx)
+      - name: Post-deploy Smoke Test
         run: |
           set -euo pipefail
 
@@ -331,8 +331,8 @@ jobs:
           echo "🔎 Smoke 1) Health check: ${BASE_URL}/api/health"
           curl -fsS "${BASE_URL}/api/health" >/dev/null
 
-          echo "🔎 Smoke 2) Main page: ${BASE_URL}/"
-          curl -fsS -o /tmp/home.html "${BASE_URL}/" >/dev/null
+          echo "🔎 Smoke 2) Main page (follow redirect) : ${BASE_URL}/"
+          curl -fsSL -o /tmp/home.html "${BASE_URL}/" >/dev/null
 
           # HTML인지 최소 확인(502/JSON/리다이렉트 루프 같은 경우 걸러냄)
           grep -qi "<html" /tmp/home.html || {
