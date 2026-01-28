@@ -150,4 +150,10 @@
     background-color: red;
     color: white;
   }
+
+  .record-confirm-btn {
+    width: 360px;
+    height: 40px;
+    background-color: rgb(var(--color-secondary));
+  }
 }

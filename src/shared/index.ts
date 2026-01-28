@@ -8,6 +8,7 @@ export { BackButton } from './ui/BackButton'
 export { CancelButton } from './ui/CancelButton'
 export { ConfirmButton } from './ui/ConfirmButton'
 export { ProgressField } from './ui/ProgressField'
+export { SubjectCard } from './ui/SubjectCard'
 export {
   Dialog,
   DialogContent,
