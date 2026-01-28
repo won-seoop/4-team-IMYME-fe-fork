@@ -24,8 +24,8 @@ export function FilteringTab() {
     isLoading: keywordLoading,
     error: keywordError,
   } = useKeywordList({
+    categoryId: selectedCategory?.id ?? undefined,
     accessToken,
-    categoryId: selectedCategory ? selectedCategory.id : null,
   })
 
   const handleCategoryClick = (category: CategoryItemType) => {

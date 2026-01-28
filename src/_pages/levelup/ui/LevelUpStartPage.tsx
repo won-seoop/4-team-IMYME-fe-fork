@@ -1,12 +1,14 @@
 'use client'
-import { ChevronLeft } from 'lucide-react'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { type ReactNode, useState } from 'react'
 
-import { KeywordItemType } from '@/entities/keyword'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { CategorySelectList, KeywordSelectList, useKeywordList } from '@/features/filtering'
 
+import { BackButton } from './BackButton'
 import { ProgressField } from './ProgressField'
+
+import type { KeywordItemType } from '@/entities/keyword'
 
 const STEP_ONE_PROGRESS_VALUE = 33
 const STEP_TWO_PROGRESS_VALUE = 66
@@ -14,32 +16,62 @@ const STEP_ONE_LABEL = '1/3'
 const STEP_TWO_LABEL = '2/3'
 
 export function LevelUpStartPage() {
+  const router = useRouter()
   const accessToken = useAccessToken()
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
   const [selectedKeyword, setSelectedKeyword] = useState<KeywordItemType | null>(null)
 
-  const { data: keywords = [] } = useKeywordList({
-    accessToken,
+  const {
+    data: keywords = [],
+    isLoading: isKeywordLoading,
+    isError: isKeywordError,
+  } = useKeywordList({
     categoryId: selectedCategoryId,
+    accessToken,
   })
 
-  const progressValue = selectedCategoryId ? STEP_TWO_PROGRESS_VALUE : STEP_ONE_PROGRESS_VALUE
-  const progressLabel = selectedCategoryId ? STEP_TWO_LABEL : STEP_ONE_LABEL
+  const hasSelectedCategory = selectedCategoryId !== null
+  const progressValue = hasSelectedCategory ? STEP_TWO_PROGRESS_VALUE : STEP_ONE_PROGRESS_VALUE
+  const progressLabel = hasSelectedCategory ? STEP_TWO_LABEL : STEP_ONE_LABEL
+
+  let keywordContent: ReactNode = null
+  if (hasSelectedCategory) {
+    if (isKeywordLoading) {
+      keywordContent = <p>키워드를 불러오는 중입니다.</p>
+    } else if (isKeywordError) {
+      keywordContent = <p>키워드를 불러오지 못했습니다.</p>
+    } else if (keywords.length === 0) {
+      keywordContent = <p>키워드 정보가 존재하지 않습니다.</p>
+    } else {
+      keywordContent = (
+        <KeywordSelectList
+          keywords={keywords}
+          selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
+          onKeywordSelect={setSelectedKeyword}
+        />
+      )
+    }
+  }
 
   const handleCategorySelect = (category: { id: number }) => {
     setSelectedCategoryId(category.id)
     if (selectedKeyword) setSelectedKeyword(null)
   }
 
+  const handleBack = () => {
+    if (!selectedCategoryId) {
+      router.back()
+      return
+    }
+
+    setSelectedCategoryId(null)
+    setSelectedKeyword(null)
+  }
+
   return (
     <>
       <div className="flex gap-3">
-        <div className="bg-secondary ml-4 flex h-10 w-10 items-center justify-center rounded-full">
-          <ChevronLeft
-            size={30}
-            className="text-primary"
-          />
-        </div>
+        <BackButton onClick={handleBack} />
         <div className="flex flex-col items-start">
           <p className="font-semibold">레벨업 모드</p>
           <p className="text-sm">카테고리 선택</p>
@@ -52,12 +84,8 @@ export function LevelUpStartPage() {
         />
       </div>
       <div className="bg-secondary mx-4 mt-4 flex h-full max-w-350 flex-col items-center justify-center overflow-y-scroll rounded-2xl py-4">
-        {selectedCategoryId ? (
-          <KeywordSelectList
-            keywords={keywords}
-            selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
-            onKeywordSelect={setSelectedKeyword}
-          />
+        {hasSelectedCategory ? (
+          keywordContent
         ) : (
           <CategorySelectList
             accessToken={accessToken}

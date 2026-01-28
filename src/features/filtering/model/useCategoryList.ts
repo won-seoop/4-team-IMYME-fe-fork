@@ -14,5 +14,6 @@ export function useCategoryList(accessToken: string) {
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: 'always',
+    initialData: [],
   })
 }

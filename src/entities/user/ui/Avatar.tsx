@@ -9,13 +9,18 @@ interface AvatarProps {
 
 export function Avatar({ avatar_src, size }: AvatarProps) {
   return (
-    <Image
-      src={avatar_src ? avatar_src : DefaultAvatar}
-      alt="profile image"
-      width={size}
-      height={size}
-      className="rounded-full object-cover"
-      loading="eager"
-    />
+    <div
+      style={{ width: size, height: size }}
+      className="relative overflow-hidden rounded-full"
+    >
+      <Image
+        src={avatar_src ? avatar_src : DefaultAvatar}
+        alt="profile image"
+        fill
+        sizes={`${size}px`}
+        className="object-cover"
+        loading="eager"
+      />
+    </div>
   )
 }

@@ -1,1 +1,1 @@
-export { type KeywordItemType } from './model/keywordItem'
+export type { KeywordItemType } from './model/keywordItem'

@@ -15,7 +15,8 @@ export function CategorySelectList({
   selectedCategoryId,
   onCategorySelect,
 }: CategorySelectListProps) {
-  const { data: categories = [], isLoading, error } = useCategoryList(accessToken)
+  const { data, isLoading, error } = useCategoryList(accessToken)
+  const categories: CategoryItemType[] = data ?? []
 
   if (isLoading) {
     return <p>카테고리를 불러오는 중입니다.</p>
