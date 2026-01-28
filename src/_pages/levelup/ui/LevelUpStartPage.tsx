@@ -1,71 +1,93 @@
 'use client'
-import { ChevronLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { KeywordItemType } from '@/entities/keyword'
+import { CategoryItemType } from '@/entities/category'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CategorySelectList, KeywordSelectList, useKeywordList } from '@/features/filtering'
+import {
+  CardNameModal,
+  CategorySelectList,
+  KeywordSelectList,
+  LevelUpHeader,
+} from '@/features/levelup'
 
-import { ProgressField } from './ProgressField'
-
+import type { KeywordItemType } from '@/entities/keyword'
 const STEP_ONE_PROGRESS_VALUE = 33
 const STEP_TWO_PROGRESS_VALUE = 66
 const STEP_ONE_LABEL = '1/3'
 const STEP_TWO_LABEL = '2/3'
 
 export function LevelUpStartPage() {
+  const router = useRouter()
   const accessToken = useAccessToken()
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<CategoryItemType | null>(null)
   const [selectedKeyword, setSelectedKeyword] = useState<KeywordItemType | null>(null)
+  const [isNameDialogOpen, setIsNameDialogOpen] = useState(false)
 
-  const { data: keywords = [] } = useKeywordList({
-    accessToken,
-    categoryId: selectedCategoryId,
-  })
+  const hasSelectedCategory = selectedCategory !== null
+  const progressValue = hasSelectedCategory ? STEP_TWO_PROGRESS_VALUE : STEP_ONE_PROGRESS_VALUE
+  const progressLabel = hasSelectedCategory ? STEP_TWO_LABEL : STEP_ONE_LABEL
 
-  const progressValue = selectedCategoryId ? STEP_TWO_PROGRESS_VALUE : STEP_ONE_PROGRESS_VALUE
-  const progressLabel = selectedCategoryId ? STEP_TWO_LABEL : STEP_ONE_LABEL
+  const handleKeywordSelect = (keyword: KeywordItemType) => {
+    setSelectedKeyword(keyword)
+    setIsNameDialogOpen(true)
+  }
 
-  const handleCategorySelect = (category: { id: number }) => {
-    setSelectedCategoryId(category.id)
-    if (selectedKeyword) setSelectedKeyword(null)
+  const handleConfirmCardName = () => {
+    setIsNameDialogOpen(false)
+    router.push('/levelup/record')
+  }
+
+  const handleBack = () => {
+    if (selectedKeyword) {
+      setSelectedKeyword(null)
+      return
+    }
+
+    if (selectedCategory) {
+      setSelectedCategory(null)
+      return
+    }
+
+    router.back()
   }
 
   return (
-    <>
-      <div className="flex gap-3">
-        <div className="bg-secondary ml-4 flex h-10 w-10 items-center justify-center rounded-full">
-          <ChevronLeft
-            size={30}
-            className="text-primary"
-          />
-        </div>
-        <div className="flex flex-col items-start">
-          <p className="font-semibold">레벨업 모드</p>
-          <p className="text-sm">카테고리 선택</p>
-        </div>
-      </div>
-      <div className="px-6">
-        <ProgressField
-          value={progressValue}
-          stepLabel={progressLabel}
-        />
-      </div>
-      <div className="bg-secondary mx-4 mt-4 flex h-full max-w-350 flex-col items-center justify-center overflow-y-scroll rounded-2xl py-4">
-        {selectedCategoryId ? (
+    <div className="h-full w-full">
+      <LevelUpHeader
+        variant={hasSelectedCategory ? 'keyword' : 'category'}
+        onBack={handleBack}
+        progressValue={progressValue}
+        stepLabel={progressLabel}
+      />
+      <div className="bg-secondary mx-4 mt-4 flex max-h-[80vh] max-w-350 flex-col items-center justify-center overflow-hidden rounded-2xl p-4">
+        {hasSelectedCategory ? (
           <KeywordSelectList
-            keywords={keywords}
+            accessToken={accessToken}
+            categoryId={selectedCategory ? selectedCategory.id : null}
             selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
-            onKeywordSelect={setSelectedKeyword}
+            onKeywordSelect={handleKeywordSelect}
           />
         ) : (
           <CategorySelectList
             accessToken={accessToken}
-            selectedCategoryId={selectedCategoryId}
-            onCategorySelect={handleCategorySelect}
+            selectedCategoryId={selectedCategory ? selectedCategory : null}
+            onCategorySelectId={setSelectedCategory}
+            onClearKeyword={() => setSelectedKeyword(null)}
           />
         )}
       </div>
-    </>
+      <CardNameModal
+        open={isNameDialogOpen}
+        onOpenChange={setIsNameDialogOpen}
+        selectedCategoryName={selectedCategory?.categoryName ?? null}
+        selectedKeywordName={selectedKeyword?.keywordName ?? null}
+        onCancel={() => {
+          setSelectedKeyword(null)
+          setIsNameDialogOpen(false)
+        }}
+        onConfirm={handleConfirmCardName}
+      />
+    </div>
   )
 }

@@ -10,6 +10,9 @@ interface KeywordApiItem {
 }
 
 interface KeywordApiResponse {
+  data?: {
+    keywords?: KeywordApiItem[]
+  }
   keywords?: KeywordApiItem[]
 }
 
@@ -27,7 +30,7 @@ export async function getKeywords(
       },
     )
 
-    const items = response.data?.keywords ?? []
+    const items = response.data?.data?.keywords ?? response.data?.keywords ?? []
 
     return items.map((item) => ({
       id: item.id,

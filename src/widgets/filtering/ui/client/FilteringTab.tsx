@@ -24,8 +24,8 @@ export function FilteringTab() {
     isLoading: keywordLoading,
     error: keywordError,
   } = useKeywordList({
+    categoryId: selectedCategory?.id ?? null,
     accessToken,
-    categoryId: selectedCategory ? selectedCategory.id : null,
   })
 
   const handleCategoryClick = (category: CategoryItemType) => {
@@ -42,7 +42,7 @@ export function FilteringTab() {
   }
 
   return (
-    <DrawerContent className="filtering-tab-frame">
+    <DrawerContent className="filtering-tab-frame h-50vh flex-col">
       <DrawerHeader>
         <DrawerTitle>카테고리 선택</DrawerTitle>
         <div className="flex min-h-5 items-center gap-1">
@@ -65,16 +65,18 @@ export function FilteringTab() {
         </div>
       </DrawerHeader>
       <div className="bg-secondary mt-0 mb-0 h-0.5 w-full"></div>
-      <div className="flex h-full flex-1 pb-0">
-        <CategoryList
-          isLoading={categoryLoading}
-          error={categoryError}
-          categories={categoryData}
-          onCategoryClick={handleCategoryClick}
-          selectedCategoryId={selectedCategory ? selectedCategory.id : null}
-        />
-        <div className="bg-secondary ml-2 min-h-full w-0.5"></div>
-        <div className="h-full overflow-y-scroll">
+      <div className="flex min-h-0 pb-0">
+        <div className="min-h-0">
+          <CategoryList
+            isLoading={categoryLoading}
+            error={categoryError}
+            categories={categoryData}
+            onCategoryClick={handleCategoryClick}
+            selectedCategoryId={selectedCategory ? selectedCategory.id : null}
+          />
+        </div>
+        <div className="bg-secondary min-h-full w-0.5"></div>
+        <div className="flex min-h-0 flex-1">
           {keywordData.length > 0 ? (
             <KeywordList
               isLoading={keywordLoading}

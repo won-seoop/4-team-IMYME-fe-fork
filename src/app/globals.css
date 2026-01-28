@@ -106,14 +106,54 @@
     color: rgb(var(--color-primary));
   }
 
+  .text-secondary {
+    color: rgb(var(--color-secondary));
+  }
+
   .filtering-tab-frame {
     background-color: rgb(var(--color-background));
     margin: 0 auto;
     min-height: 50vh;
     max-height: 60vh;
     width: 100%;
-    height: 100%;
+    height: 60vh;
     max-width: var(--frame-max-width);
     min-width: var(--frame-min-width);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .confirm-btn-primary {
+    width: 100px;
+    height: 40px;
+    border-width: 1px;
+    border-color: rgb(var(--color-primary));
+    color: rgb(var(--color-primary));
+  }
+
+  .confirm-btn-primary:hover,
+  .confirm-btn-primary:active {
+    background-color: rgb(var(--color-primary));
+    color: rgb(var(--color-primary-foreground));
+  }
+
+  .cancel-btn-primary {
+    width: 100px;
+    height: 40px;
+    border-width: 1px;
+    border-color: red;
+    color: red;
+  }
+
+  .cancel-btn-primary:hover,
+  .cancel-btn-primary:active {
+    background-color: red;
+    color: white;
+  }
+
+  .record-confirm-btn {
+    width: 360px;
+    height: 40px;
+    background-color: rgb(var(--color-secondary));
   }
 }
