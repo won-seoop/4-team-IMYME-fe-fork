@@ -11,7 +11,7 @@ type KeywordListProps = {
 
 export function KeywordList({ keywords, onKeywordClick, selectedKeywordId }: KeywordListProps) {
   return (
-    <div className="h-full overflow-y-scroll">
+    <div className="h-full min-h-0 overflow-y-scroll">
       {keywords.length > 0
         ? keywords.map((keyword: KeywordItemType) => (
             <KeywordItem

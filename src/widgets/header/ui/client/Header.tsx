@@ -27,7 +27,7 @@ export function Header({ showMenu = true }: HeaderProps) {
         <>
           <MenuModal
             trigger={
-              <button type="button">
+              <button>
                 <Menu className="h-5 w-5" />
               </button>
             }
