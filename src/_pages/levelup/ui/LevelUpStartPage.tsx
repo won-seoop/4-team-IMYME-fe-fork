@@ -1,9 +1,9 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { type ReactNode, useState } from 'react'
+import { useState } from 'react'
 
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CategorySelectList, KeywordSelectList, useKeywordList } from '@/features/filtering'
+import { CategorySelectList, KeywordSelectList } from '@/features/filtering'
 
 import { BackButton } from './BackButton'
 import { ProgressField } from './ProgressField'
@@ -21,42 +21,9 @@ export function LevelUpStartPage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
   const [selectedKeyword, setSelectedKeyword] = useState<KeywordItemType | null>(null)
 
-  const {
-    data: keywords = [],
-    isLoading: isKeywordLoading,
-    isError: isKeywordError,
-  } = useKeywordList({
-    categoryId: selectedCategoryId,
-    accessToken,
-  })
-
   const hasSelectedCategory = selectedCategoryId !== null
   const progressValue = hasSelectedCategory ? STEP_TWO_PROGRESS_VALUE : STEP_ONE_PROGRESS_VALUE
   const progressLabel = hasSelectedCategory ? STEP_TWO_LABEL : STEP_ONE_LABEL
-
-  let keywordContent: ReactNode = null
-  if (hasSelectedCategory) {
-    if (isKeywordLoading) {
-      keywordContent = <p>키워드를 불러오는 중입니다.</p>
-    } else if (isKeywordError) {
-      keywordContent = <p>키워드를 불러오지 못했습니다.</p>
-    } else if (keywords.length === 0) {
-      keywordContent = <p>키워드 정보가 존재하지 않습니다.</p>
-    } else {
-      keywordContent = (
-        <KeywordSelectList
-          keywords={keywords}
-          selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
-          onKeywordSelect={setSelectedKeyword}
-        />
-      )
-    }
-  }
-
-  const handleCategorySelect = (category: { id: number }) => {
-    setSelectedCategoryId(category.id)
-    if (selectedKeyword) setSelectedKeyword(null)
-  }
 
   const handleBack = () => {
     if (!selectedCategoryId) {
@@ -69,7 +36,7 @@ export function LevelUpStartPage() {
   }
 
   return (
-    <>
+    <div className="h-full w-full">
       <div className="flex gap-3">
         <BackButton onClick={handleBack} />
         <div className="flex flex-col items-start">
@@ -83,17 +50,23 @@ export function LevelUpStartPage() {
           stepLabel={progressLabel}
         />
       </div>
-      <div className="bg-secondary mx-4 mt-4 flex h-full max-w-350 flex-col items-center justify-center overflow-y-scroll rounded-2xl py-4">
+      <div className="bg-secondary mx-4 mt-4 flex max-h-[80vh] max-w-350 flex-col items-center justify-center overflow-hidden rounded-2xl p-4">
         {hasSelectedCategory ? (
-          keywordContent
+          <KeywordSelectList
+            accessToken={accessToken}
+            categoryId={selectedCategoryId}
+            selectedKeywordId={selectedKeyword ? selectedKeyword.id : null}
+            onKeywordSelect={setSelectedKeyword}
+          />
         ) : (
           <CategorySelectList
             accessToken={accessToken}
             selectedCategoryId={selectedCategoryId}
-            onCategorySelect={handleCategorySelect}
+            onCategorySelectId={setSelectedCategoryId}
+            onClearKeyword={() => setSelectedKeyword(null)}
           />
         )}
       </div>
-    </>
+    </div>
   )
 }

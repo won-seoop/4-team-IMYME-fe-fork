@@ -7,16 +7,22 @@ import type { CategoryItemType } from '@/entities/category'
 type CategorySelectListProps = {
   accessToken: string
   selectedCategoryId: number | null
-  onCategorySelect: (category: CategoryItemType) => void
+  onCategorySelectId: (categoryId: number) => void
+  onClearKeyword: () => void
 }
 
 export function CategorySelectList({
   accessToken,
   selectedCategoryId,
-  onCategorySelect,
+  onCategorySelectId,
+  onClearKeyword,
 }: CategorySelectListProps) {
   const { data, isLoading, error } = useCategoryList(accessToken)
   const categories: CategoryItemType[] = data ?? []
+
+  if (!accessToken) {
+    return <p>카테고리를 불러오려면 로그인이 필요합니다.</p>
+  }
 
   if (isLoading) {
     return <p>카테고리를 불러오는 중입니다.</p>
@@ -31,7 +37,7 @@ export function CategorySelectList({
   }
 
   return (
-    <div className="itmes-center grid grid-cols-2 gap-6">
+    <div className="itmes-center grid min-h-0 w-full flex-1 grid-cols-2 place-items-center gap-6 overflow-y-auto">
       {categories.map((category) => {
         const isSelected = selectedCategoryId === category.id
         const selectedClassName = isSelected ? 'border border-secondary' : ''
@@ -40,7 +46,10 @@ export function CategorySelectList({
           <button
             key={category.id}
             type="button"
-            onClick={() => onCategorySelect(category)}
+            onClick={() => {
+              onCategorySelectId(category.id)
+              onClearKeyword()
+            }}
             className={`flex h-40 w-40 items-center justify-center overflow-auto rounded-2xl bg-white ${selectedClassName}`}
           >
             <p>{category.categoryName}</p>
