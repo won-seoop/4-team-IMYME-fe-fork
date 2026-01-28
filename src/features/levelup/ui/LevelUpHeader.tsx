@@ -2,7 +2,7 @@
 
 import { BackButton, ProgressField } from '@/shared'
 
-type HeaderVariant = 'category' | 'keyword'
+type HeaderVariant = 'category' | 'keyword' | 'recording'
 
 type LevelUpHeaderProps = {
   variant: HeaderVariant
@@ -15,6 +15,7 @@ const TITLE_TEXT = '레벨업 모드'
 const SUBTITLE_TEXT_BY_VARIANT: Record<HeaderVariant, string> = {
   category: '카테고리 선택',
   keyword: '키워드 선택',
+  recording: '음성 녹음',
 }
 
 export function LevelUpHeader({ variant, onBack, progressValue, stepLabel }: LevelUpHeaderProps) {

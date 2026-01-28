@@ -4,11 +4,14 @@ import { useState } from 'react'
 
 import { CategoryItemType } from '@/entities/category'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { CategorySelectList, KeywordSelectList } from '@/features/levelup'
-import { LevelUpHeader } from '@/features/levelup'
+import {
+  CardNameModal,
+  CategorySelectList,
+  KeywordSelectList,
+  LevelUpHeader,
+} from '@/features/levelup'
 
 import type { KeywordItemType } from '@/entities/keyword'
-
 const STEP_ONE_PROGRESS_VALUE = 33
 const STEP_TWO_PROGRESS_VALUE = 66
 const STEP_ONE_LABEL = '1/3'
@@ -19,6 +22,7 @@ export function LevelUpStartPage() {
   const accessToken = useAccessToken()
   const [selectedCategory, setSelectedCategory] = useState<CategoryItemType | null>(null)
   const [selectedKeyword, setSelectedKeyword] = useState<KeywordItemType | null>(null)
+  const [isNameDialogOpen, setIsNameDialogOpen] = useState(false)
 
   const hasSelectedCategory = selectedCategory !== null
   const progressValue = hasSelectedCategory ? STEP_TWO_PROGRESS_VALUE : STEP_ONE_PROGRESS_VALUE
@@ -26,20 +30,26 @@ export function LevelUpStartPage() {
 
   const handleKeywordSelect = (keyword: KeywordItemType) => {
     setSelectedKeyword(keyword)
+    setIsNameDialogOpen(true)
+  }
+
+  const handleConfirmCardName = () => {
+    setIsNameDialogOpen(false)
     router.push('/levelup/record')
-    setSelectedCategory(null)
-    setSelectedKeyword(null)
   }
 
   const handleBack = () => {
-    if (!selectedCategory?.id || (selectedCategory && !selectedKeyword)) {
-      setSelectedCategory(null)
-      router.back()
+    if (selectedKeyword) {
+      setSelectedKeyword(null)
       return
     }
 
-    setSelectedCategory(null)
-    setSelectedKeyword(null)
+    if (selectedCategory) {
+      setSelectedCategory(null)
+      return
+    }
+
+    router.back()
   }
 
   return (
@@ -67,6 +77,17 @@ export function LevelUpStartPage() {
           />
         )}
       </div>
+      <CardNameModal
+        open={isNameDialogOpen}
+        onOpenChange={setIsNameDialogOpen}
+        selectedCategoryName={selectedCategory?.categoryName ?? null}
+        selectedKeywordName={selectedKeyword?.keywordName ?? null}
+        onCancel={() => {
+          setSelectedKeyword(null)
+          setIsNameDialogOpen(false)
+        }}
+        onConfirm={handleConfirmCardName}
+      />
     </div>
   )
 }
