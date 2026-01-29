@@ -1,3 +1,5 @@
+'use client'
+
 import { useProfileImage } from '@/entities/user/model/useUserStore'
 import {
   ProfileImageInput,
