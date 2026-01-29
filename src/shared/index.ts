@@ -9,6 +9,8 @@ export { CancelButton } from './ui/CancelButton'
 export { ConfirmButton } from './ui/ConfirmButton'
 export { ProgressField } from './ui/ProgressField'
 export { SubjectCard } from './ui/SubjectCard'
+export { SubjectHeader } from './ui/SubjectHeader'
+export { formatDate } from './lib/formatDate'
 export {
   Dialog,
   DialogContent,
@@ -19,3 +21,4 @@ export {
   DialogFooter,
   DialogClose,
 } from './ui/dialog'
+export { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'

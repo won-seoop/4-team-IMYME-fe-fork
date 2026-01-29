@@ -2,12 +2,13 @@
 
 import { BackButton, ProgressField } from '@/shared'
 
-type HeaderVariant = 'category' | 'keyword' | 'recording'
+type HeaderVariant = 'category' | 'keyword' | 'recording' | 'feedback'
 
 type LevelUpHeaderProps = {
   variant: HeaderVariant
   onBack: () => void
-  progressValue: number
+  title?: string
+  progressValue?: number
   stepLabel: string
 }
 
@@ -16,24 +17,33 @@ const SUBTITLE_TEXT_BY_VARIANT: Record<HeaderVariant, string> = {
   category: '카테고리 선택',
   keyword: '키워드 선택',
   recording: '음성 녹음',
+  feedback: 'AI 피드백',
 }
 
-export function LevelUpHeader({ variant, onBack, progressValue, stepLabel }: LevelUpHeaderProps) {
+export function LevelUpHeader({
+  variant,
+  title,
+  onBack,
+  progressValue,
+  stepLabel,
+}: LevelUpHeaderProps) {
   return (
     <>
       <div className="flex gap-3">
         <BackButton onClick={onBack} />
         <div className="flex flex-col items-start">
-          <p className="font-semibold">{TITLE_TEXT}</p>
+          <p className="font-semibold">{title ? title : TITLE_TEXT}</p>
           <p className="text-sm">{SUBTITLE_TEXT_BY_VARIANT[variant]}</p>
         </div>
       </div>
-      <div className="px-6">
-        <ProgressField
-          value={progressValue}
-          stepLabel={stepLabel}
-        />
-      </div>
+      {progressValue ? (
+        <div className="px-6">
+          <ProgressField
+            value={progressValue}
+            stepLabel={stepLabel}
+          />
+        </div>
+      ) : null}
     </>
   )
 }
