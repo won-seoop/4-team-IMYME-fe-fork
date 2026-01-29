@@ -9,6 +9,7 @@ type CardProps = {
   date: string
   categoryName: string
   keywordName: string
+  onClick?: () => void
 }
 
 const REVEAL_PX = 50
@@ -24,7 +25,7 @@ const TAG_LIST_CLASSNAME = 'flex gap-2'
 const TAG_CLASSNAME =
   'bg-secondary text-primary flex h-5 min-w-15 items-center justify-center rounded-2xl px-2 text-xs'
 
-export function Card({ title, date, categoryName, keywordName }: CardProps) {
+export function Card({ title, date, categoryName, keywordName, onClick }: CardProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
 
   const [x, setX] = useState(0) // 0 ~ -REVEAL_PX
@@ -98,6 +99,10 @@ export function Card({ title, date, categoryName, keywordName }: CardProps) {
     }
     // ✅ 탭으로 닫기
     if (isRevealed) close()
+
+    if (onClick) {
+      onClick()
+    }
   }
 
   return (
@@ -121,6 +126,7 @@ export function Card({ title, date, categoryName, keywordName }: CardProps) {
           CARD_CLASSNAME,
           'relative z-10 touch-pan-y',
           dragging ? '' : 'transition-transform duration-200 ease-out',
+          onClick ? 'cursor-pointer' : '',
         ].join(' ')}
         style={{ transform: `translateX(${x}px)` }}
         onPointerDown={handlePointerDown}

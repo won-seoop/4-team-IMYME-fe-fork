@@ -1,5 +1,6 @@
 'use client'
 
+import { useUserId } from '@/entities/user/model/useUserStore'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { useMyCardList } from '@/features/my-card/model/useMyCardList'
 import { Card, formatDate } from '@/shared'
@@ -8,7 +9,8 @@ const LIST_CLASSNAME = `mt-4 flex min-h-0 flex-col items-center gap-4 overflow-y
 
 export function MyCardList() {
   const accessToken = useAccessToken()
-  const { data, isLoading, error } = useMyCardList(accessToken)
+  const userId = useUserId()
+  const { data, isLoading, error } = useMyCardList(accessToken, userId)
 
   if (isLoading) {
     return <p>카드를 불러오는 중입니다.</p>
