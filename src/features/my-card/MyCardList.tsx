@@ -8,29 +8,51 @@ import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { useMyCardList } from '@/features/my-card/model/useMyCardList'
 import { formatDate } from '@/shared'
 
-const LIST_CLASSNAME = `mt-4 flex min-h-0 flex-col items-center gap-4 overflow-y-auto max-h-[60vh]`
+import type { CategoryItemType } from '@/entities/category'
+import type { KeywordItemType } from '@/entities/keyword'
 
-export function MyCardList() {
+const LIST_CLASSNAME = 'mt-4 flex min-h-0 flex-col items-center gap-4 overflow-y-auto max-h-[60vh]'
+const COMMENT_CLASSNAME = 'mt-10 text-center'
+
+type MyCardListProps = {
+  selectedCategory: CategoryItemType | null
+  selectedKeyword: KeywordItemType | null
+}
+
+export function MyCardList({ selectedCategory, selectedKeyword }: MyCardListProps) {
   const router = useRouter()
   const accessToken = useAccessToken()
   const userId = useUserId()
   const { data, isLoading, error } = useMyCardList(accessToken, userId)
 
   if (isLoading) {
-    return <p>카드를 불러오는 중입니다.</p>
+    return <p className={COMMENT_CLASSNAME}>카드를 불러오는 중입니다.</p>
   }
 
   if (error) {
-    return <p>카드를 불러오지 못했습니다.</p>
+    return <p className={COMMENT_CLASSNAME}>카드를 불러오지 못했습니다.</p>
   }
 
   if (data?.length === 0) {
-    return <p>카드가 없습니다.</p>
+    return <p className={COMMENT_CLASSNAME}>카드가 없습니다.</p>
+  }
+
+  const shouldFilter = Boolean(selectedCategory) || Boolean(selectedKeyword)
+  const filteredCards = shouldFilter
+    ? data?.filter((card) => {
+        if (selectedCategory && card.categoryName !== selectedCategory.categoryName) return false
+        if (selectedKeyword && card.keywordName !== selectedKeyword.keywordName) return false
+        return true
+      })
+    : data
+
+  if (filteredCards?.length === 0) {
+    return <p className={COMMENT_CLASSNAME}>조건에 맞는 카드가 없습니다.</p>
   }
 
   return (
     <div className={LIST_CLASSNAME}>
-      {data?.map((card) => (
+      {filteredCards?.map((card) => (
         <Card
           key={card.id}
           title={card.title}

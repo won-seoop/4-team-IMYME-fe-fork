@@ -13,11 +13,8 @@ type UseKeywordListOptions = {
 
 export function useKeywordList({ categoryId, accessToken }: UseKeywordListOptions) {
   return useQuery<KeywordItemType[]>({
-    queryKey: ['keywords', categoryId, accessToken],
+    queryKey: ['keywords', categoryId],
     queryFn: () => getKeywords(accessToken, categoryId),
     enabled: Boolean(accessToken) && categoryId !== null,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: 'always',
   })
 }
