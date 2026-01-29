@@ -1,5 +1,6 @@
 import { SlidersVertical } from 'lucide-react'
 
+import { MyCardList } from '@/features/my-card/MyCardList'
 import { Drawer, DrawerTrigger } from '@/shared/ui/drawer'
 import { FilteringTab } from '@/widgets/filtering'
 import { ProfileDashboard } from '@/widgets/profile'
@@ -23,6 +24,7 @@ export function MyPage() {
           <FilteringTab />
         </Drawer>
       </div>
+      <MyCardList />
     </div>
   )
 }
