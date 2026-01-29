@@ -4,7 +4,7 @@ import { Mic } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { LevelUpHeader } from '@/features/levelup'
-import { SubjectCard } from '@/shared'
+import { SubjectHeader } from '@/shared'
 import { Button } from '@/shared/ui/button'
 
 const RECORD_PROGRESS_VALUE = 100
@@ -25,18 +25,11 @@ export function LevelUpRecordPage() {
         progressValue={RECORD_PROGRESS_VALUE}
         stepLabel={RECORD_STEP_LABEL}
       />
-      <div className="mt-6 flex justify-center gap-6">
-        <SubjectCard
-          variant="category"
-          title="학습 중인 카테고리"
-          value="자료구조"
-        />
-        <SubjectCard
-          variant="keyword"
-          title="학습 중인 키워드"
-          value="Stack"
-        />
-      </div>
+      <SubjectHeader
+        variant="in_progress"
+        categoryValue="자료구조"
+        keywordValue="Stack"
+      />
       <div className="mt-4 flex w-full flex-col items-center">
         <div className="border-secondary bg-var(--color-background) flex h-90 w-90 flex-col items-center gap-6 rounded-2xl border-2">
           <p className="mt-6 text-sm">음성으로 말해보세요.</p>

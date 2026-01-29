@@ -1,13 +1,17 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+
+import { Card } from '@/entities/card'
 import { useUserId } from '@/entities/user/model/useUserStore'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { useMyCardList } from '@/features/my-card/model/useMyCardList'
-import { Card, formatDate } from '@/shared'
+import { formatDate } from '@/shared'
 
 const LIST_CLASSNAME = `mt-4 flex min-h-0 flex-col items-center gap-4 overflow-y-auto max-h-[60vh]`
 
 export function MyCardList() {
+  const router = useRouter()
   const accessToken = useAccessToken()
   const userId = useUserId()
   const { data, isLoading, error } = useMyCardList(accessToken, userId)
@@ -33,6 +37,7 @@ export function MyCardList() {
           date={formatDate(card.createdAt)}
           categoryName={card.categoryName}
           keywordName={card.keywordName}
+          onClick={() => router.push(`/mypage/cards/${card.id}`)}
         />
       ))}
     </div>

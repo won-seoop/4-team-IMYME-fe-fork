@@ -2,11 +2,12 @@
 
 import { useRouter } from 'next/navigation'
 
+import { Card } from '@/entities/card'
 import { useUserId } from '@/entities/user/model/useUserStore'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { MyCardItem } from '@/features/my-card/model/getMyCards'
 import { useMyCardList } from '@/features/my-card/model/useMyCardList'
-import { Card, formatDate } from '@/shared'
+import { formatDate } from '@/shared'
 
 const LIST_CLASSNAME = 'mt-5 flex flex-col items-center gap-4'
 const RECENT_LIMIT = 3
