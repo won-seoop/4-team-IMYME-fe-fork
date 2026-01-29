@@ -282,9 +282,8 @@ jobs:
 
           CURRENT_LINK=$APP_DIR/current
           RELEASE_DIR=$RELEASES_DIR/$RELEASE_ID
-          LOG_DIR=$SHARED_DIR/logs
 
-          mkdir -p "$RELEASE_DIR" "$LOG_DIR"
+          mkdir -p "$RELEASE_DIR"
 
           # 1. 빌드 아티팩트 복사 (.next, package.json, pnpm-lock.yaml)
           cp -r $APP_DIR/build/.next "$RELEASE_DIR/"
@@ -319,7 +318,9 @@ jobs:
           set +a
 
           pm2 delete frontend || true
-          pm2 start npx --name frontend -- next start -p 3000
+          pm2 start "npx next start -p 3000" \
+            --name frontend \
+            --time
 
           # 6. Health Check
           echo "🔍 Frontend health check"
