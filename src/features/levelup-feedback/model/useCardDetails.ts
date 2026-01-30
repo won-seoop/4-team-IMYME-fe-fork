@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { getCardDetails } from './getCardDetails'
+import { getCardDetails } from '../api/getCardDetails'
 
 export function useCardDetails(accessToken: string, cardId: number | undefined) {
   return useQuery({

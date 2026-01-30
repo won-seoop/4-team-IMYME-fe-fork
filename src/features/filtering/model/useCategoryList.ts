@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { getCategories } from './getCategories'
+import { getCategories } from '../api/getCategories'
 
 import type { CategoryItemType } from '@/entities/category'
 

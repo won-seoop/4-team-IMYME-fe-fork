@@ -1,7 +1,7 @@
 'use client'
 
 import { useFilteringSelection } from '@/features/filtering'
-import { MyCardList } from '@/features/my-card/MyCardList'
+import { MyCardList } from '@/features/my-card'
 import { FilteringToolbar } from '@/widgets/filtering'
 import { ProfileDashboard } from '@/widgets/profile'
 

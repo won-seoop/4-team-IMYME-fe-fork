@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { getKeywords } from './getKeywords'
+import { getKeywords } from '../api/getKeywords'
 
 import type { KeywordItemType } from '@/entities/keyword'
 
