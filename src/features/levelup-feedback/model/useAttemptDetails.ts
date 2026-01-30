@@ -1,6 +1,6 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
 
-import { getAttemptDetails } from './getAttemptDetails'
+import { getAttemptDetails } from '../api/getAttemptDetails'
 
 export function useAttemptDetails(
   accessToken: string,

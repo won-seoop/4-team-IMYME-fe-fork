@@ -10,7 +10,7 @@ import {
   KeywordSelectList,
   LevelUpHeader,
 } from '@/features/levelup'
-import { createCard } from '@/features/levelup/model/createCard'
+import { createCard } from '@/features/levelup/api/createCard'
 
 import type { KeywordItemType } from '@/entities/keyword'
 const STEP_ONE_PROGRESS_VALUE = 33
