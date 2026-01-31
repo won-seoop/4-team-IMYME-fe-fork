@@ -3,9 +3,9 @@
 import { useParams, useRouter } from 'next/navigation'
 
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { LevelUpHeader } from '@/features/levelup'
 import { FeedbackTab, useCardDetails } from '@/features/levelup-feedback'
 import { useFeedbackData, CardInfo } from '@/features/levelup-feedback'
+import { LevelUpHeader } from '@/shared'
 import { SubjectHeader, formatDate } from '@/shared'
 import { Button } from '@/shared/ui/button'
 
@@ -48,6 +48,11 @@ export function CardDetailsPage() {
         <Button
           className="border-primary text-primary bg-var(--color-background) h-10 w-60 rounded-xl border"
           size={'lg'}
+          onClick={() => {
+            if (!cardId) return
+            router.push(`/levelup/record?cardId=${cardId}`)
+          }}
+          disabled={remainingAttempts === 0}
         >
           이어서 학습하기
         </Button>
