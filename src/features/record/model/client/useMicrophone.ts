@@ -23,6 +23,7 @@ type UseMicrophoneResult = {
   pauseRecording: () => void
   resumeRecording: () => void
   stopRecording: () => void
+  clearRecordedBlob: () => void
 }
 
 export function useMicrophone(): UseMicrophoneResult {
@@ -239,6 +240,10 @@ export function useMicrophone(): UseMicrophoneResult {
     return true
   }
 
+  const clearRecordedBlob = () => {
+    setRecordedBlob(null)
+  }
+
   const stopRecordingAndGetBlob = async () => {
     if (!recorder || recorder.state === 'inactive') {
       return recordedBlob
@@ -267,5 +272,6 @@ export function useMicrophone(): UseMicrophoneResult {
     pauseRecording,
     resumeRecording,
     stopRecording,
+    clearRecordedBlob,
   }
 }

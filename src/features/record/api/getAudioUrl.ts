@@ -1,11 +1,11 @@
 import { httpClient } from '@/shared'
 
 type GetAudioUrlResponse = {
-  data?: {
-    attemptId?: number
-    uploadUrl?: string
-    objectKey?: string
-    expiresAt?: string
+  data: {
+    attemptId: number
+    uploadUrl: string
+    objectKey: string
+    expiresAt: string
   }
 }
 

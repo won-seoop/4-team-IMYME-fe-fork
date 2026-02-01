@@ -23,3 +23,4 @@ export {
   DialogClose,
 } from './ui/dialog'
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+export { LevelUpHeader } from './ui/LevelUpHeader'

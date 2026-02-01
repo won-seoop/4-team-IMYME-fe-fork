@@ -25,6 +25,7 @@ const buttonVariants = cva(
         cancel_btn_primary: 'cancel-btn-primary',
         record_confirm_btn: 'record-confirm-btn',
         carousel_btn: 'bg-background',
+        levelup_feedback_btn: 'bg-secondary w-40 h-10 rounded-2xl',
       },
       size: {
         default: 'h-9 px-4 py-2',

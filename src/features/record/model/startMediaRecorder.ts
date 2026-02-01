@@ -12,7 +12,7 @@ type StartMediaRecorderResult =
 
 const DEFAULT_CONSTRAINTS: MediaStreamConstraints = { audio: true }
 const ALLOWED_MIME_TYPES = ['audio/mp4', 'audio/webm', 'audio/wav', 'audio/mpeg']
-const DEFAULT_MIME_TYPE = 'audio/webm'
+const DEFAULT_MIME_TYPE = 'audio/wav'
 
 export async function startMediaRecorder(
   options: StartMediaRecorderOptions = {}, // ✅ 옵션 안 주면 빈 객체로 기본 처리

@@ -6,13 +6,17 @@ import { toast } from 'sonner'
 
 import { deleteCard } from '@/entities/card'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import { LevelUpHeader, startWarmup } from '@/features/levelup'
+import { startWarmup } from '@/features/levelup'
 import { useCardDetails } from '@/features/levelup-feedback'
+import { FeedbackLoader } from '@/features/levelup-feedback/ui/FeedbackLoader'
 import { MicrophoneBox, useMicrophone } from '@/features/record'
 import { completeAudioUpload, getAudioUrl, uploadAudio } from '@/features/record'
 import { createAttempt } from '@/features/record/api/createAttempt'
+import { LevelUpHeader } from '@/shared'
 import { AlertModal, RecordTipBox, SubjectHeader } from '@/shared'
 import { Button } from '@/shared/ui/button'
+import { deleteAttempt } from '@/features/levelup-feedback/api/deleteAttempt'
+import type { FeedbackStatus } from '@/features/levelup-feedback/ui/FeedbackLoader'
 
 const RECORD_PROGRESS_VALUE = 100
 const RECORD_STEP_LABEL = '3/3'
@@ -57,10 +61,13 @@ export function LevelUpRecordPage() {
     resumeRecording,
     elapsedSeconds,
     getDurationSeconds,
+    clearRecordedBlob,
   } = useMicrophone()
   const [isBackAlertOpen, setIsBackAlertOpen] = useState(false)
   const [warmupError, setWarmupError] = useState(false)
   const [isStartingWarmup, setIsStartingWarmup] = useState(false)
+  const [attemptId, setAttemptId] = useState<number | null>(null)
+  const [uploadStatus, setUploadStatus] = useState<FeedbackStatus | null>(null)
 
   useEffect(() => {
     if (!warmupError) return
@@ -90,7 +97,7 @@ export function LevelUpRecordPage() {
 
     if (!response) {
       setWarmupError(true)
-      toast.error('음성 녹음 시작에 실패하였습니다. 다시 시도해주세요.')
+      toast.error('음성 녹음에 실패하였습니다. 잠시 후 다시 시도해주세요.')
       return
     }
 
@@ -99,17 +106,14 @@ export function LevelUpRecordPage() {
   }
 
   const handleBack = () => {
-    const hasAttemptId = Boolean(attemptIdFromQuery)
-    if (!hasAttemptId) {
-      setIsBackAlertOpen(true)
-      return
-    }
-
-    router.push('/main')
+    setIsBackAlertOpen(true)
   }
 
   const handleBackConfirm = async () => {
     setIsBackAlertOpen(false)
+    if (accessToken && cardId && attemptId) {
+      await deleteAttempt(accessToken, cardId, attemptId)
+    }
     if (accessToken && cardId) {
       await deleteCard(accessToken, cardId)
     }
@@ -129,18 +133,12 @@ export function LevelUpRecordPage() {
 
     const completedBlob = await stopRecordingAndGetBlob()
     if (!completedBlob) {
-      toast.error('녹음 파일이 없습니다. 다시 녹음해주세요.')
+      toast.error('녹음 파일을 생성하던 중 오류가 발생했습니다. 다시 녹음해주세요.')
       return
     }
 
     const durationSeconds = getDurationSeconds()
-    const attemptResult = await createAttempt(accessToken, cardId, durationSeconds)
-    if (!attemptResult.ok || !attemptResult.data?.attemptId) {
-      toast.error('학습 시도 생성에 실패했습니다. 다시 시도해주세요.')
-      return
-    }
 
-    const attemptId = attemptResult.data.attemptId
     const fileExtension = MIME_EXTENSION_MAP[completedBlob.type] ?? DEFAULT_AUDIO_EXTENSION
     const audioUrlResult = await getAudioUrl(accessToken, cardId, fileExtension)
     if (!audioUrlResult.ok) {
@@ -148,6 +146,11 @@ export function LevelUpRecordPage() {
       return
     }
 
+    const attemptId = audioUrlResult.data.attemptId
+    setAttemptId(attemptId)
+    console.log('[record] createAttempt attemptId:', attemptId)
+
+    console.log('[record] presigned attemptId:', audioUrlResult.data?.attemptId)
     const uploadUrl = audioUrlResult.data?.uploadUrl
     if (!uploadUrl) {
       toast.error('오디오 업로드 URL이 비어있습니다.')
@@ -173,6 +176,11 @@ export function LevelUpRecordPage() {
       return
     }
 
+    if (completeResult.data?.status === 'PENDING') {
+      setUploadStatus('PENDING')
+    }
+
+    clearRecordedBlob()
     router.push(`/levelup/feedback?cardId=${cardId}&attemptId=${attemptId}`)
   }
 
@@ -189,18 +197,22 @@ export function LevelUpRecordPage() {
         categoryValue={data?.categoryName ?? ''}
         keywordValue={data?.keywordName ?? ''}
       />
-      <MicrophoneBox
-        isStartingWarmup={isStartingWarmup}
-        warmupError={warmupError}
-        onMicClick={handleMicClick}
-        title="음성으로 말해보세요."
-        description="버튼을 눌러 녹음을 시작하세요."
-        errorMessage="녹음 시작에 실패했습니다. 메인으로 이동합니다."
-        isMicDisabled={Boolean(recordedBlob)}
-        isRecording={isRecording}
-        isPaused={isPaused}
-        elapsedSeconds={elapsedSeconds}
-      />
+      {uploadStatus === 'PENDING' ? (
+        <FeedbackLoader status="PENDING" />
+      ) : (
+        <MicrophoneBox
+          isStartingWarmup={isStartingWarmup}
+          warmupError={warmupError}
+          onMicClick={handleMicClick}
+          title="음성으로 말해보세요."
+          description="버튼을 눌러 녹음을 시작하세요."
+          errorMessage="녹음 시작에 실패했습니다. 메인으로 이동합니다."
+          isMicDisabled={Boolean(recordedBlob)}
+          isRecording={isRecording}
+          isPaused={isPaused}
+          elapsedSeconds={elapsedSeconds}
+        />
+      )}
       <RecordTipBox />
       <div className="mt-4 flex w-full items-center justify-center gap-4">
         <Button
