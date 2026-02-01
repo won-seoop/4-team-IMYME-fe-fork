@@ -102,6 +102,7 @@ jobs:
           NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
           NODE_ENV: ${{ secrets.NODE_ENV }}
           NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          NEXT_PUBLIC_GOOGLE_ANALYTICS: ${{ secrets.NEXT_PUBLIC_GOOGLE_ANALYTICS }}
 
         run: |
           echo "=== Build env check (masked) ==="
@@ -109,6 +110,7 @@ jobs:
           echo "NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}"
           echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}"
           echo "NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI}"
+          echo "NEXT_PUBLIC_GOOGLE_ANALYTICS=${NEXT_PUBLIC_GOOGLE_ANALYTICS}"
 
           pnpm next build
 
