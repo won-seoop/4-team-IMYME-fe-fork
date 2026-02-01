@@ -16,6 +16,8 @@ import {
 import { AlertModal, LevelUpHeader, SubjectHeader } from '@/shared'
 import { Button } from '@/shared/ui/button'
 
+const FAILED_REDIRECT_DELAY_MS = 3000
+
 export function LevelUpFeedbackPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -50,7 +52,10 @@ export function LevelUpFeedbackPage() {
 
   const handleFailed = useCallback(() => {
     toast.error('피드백 생성에 실패했습니다. 다시 시도해주세요.')
-  }, [])
+    window.setTimeout(() => {
+      router.push('/main')
+    }, FAILED_REDIRECT_DELAY_MS)
+  }, [router])
 
   const { status, processingStep, feedbackData } = useFeedbackPolling({
     accessToken,
