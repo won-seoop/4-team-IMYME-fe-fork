@@ -99,8 +99,18 @@ jobs:
         env:
           NEXT_PUBLIC_KAKAO_REST_API_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_REST_API_KEY }}
           NEXT_PUBLIC_KAKAO_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_KAKAO_REDIRECT_URI }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
+          NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
 
-        run: pnpm next build
+        run: |
+          echo "=== Build env check (masked) ==="
+          echo "NODE_ENV=$NODE_ENV"
+          echo "NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}"
+          echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}"
+          echo "NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI}"
+
+          pnpm next build
 
       # 9. 이전 아티팩트 삭제
       - name: Delete old artifacts
@@ -272,9 +282,8 @@ jobs:
 
           CURRENT_LINK=$APP_DIR/current
           RELEASE_DIR=$RELEASES_DIR/$RELEASE_ID
-          LOG_DIR=$SHARED_DIR/logs
 
-          mkdir -p "$RELEASE_DIR" "$LOG_DIR"
+          mkdir -p "$RELEASE_DIR"
 
           # 1. 빌드 아티팩트 복사 (.next, package.json, pnpm-lock.yaml)
           cp -r $APP_DIR/build/.next "$RELEASE_DIR/"
@@ -295,13 +304,28 @@ jobs:
 
           # 5. PM2로 프론트 서버 재시작
           cd "$CURRENT_LINK"
+
+          # shared env 로드 (없으면 실패하게)
+          ENV_FILE="$SHARED_DIR/.env"
+          if [ ! -f "$ENV_FILE" ]; then
+            echo "❌ env file not found: $ENV_FILE"
+            exit 1
+          fi
+
+          # env를 export 상태로 로드
+          set -a
+          source "$ENV_FILE"
+          set +a
+
           pm2 delete frontend || true
-          pm2 start npx --name frontend -- next start -p 3000
+          pm2 start "npx next start -p 3000" \
+            --name frontend \
+            --time
 
           # 6. Health Check
           echo "🔍 Frontend health check"
           for i in {1..10}; do
-            if curl -sf http://127.0.0.1:3000/api/front/health > /dev/null; then
+            if curl -sf http://127.0.0.1:3000/api/health > /dev/null; then
               echo "✅ Frontend health check passed"
               break
             fi
@@ -309,7 +333,7 @@ jobs:
             sleep 3
           done
 
-          if ! curl -sf http://127.0.0.1:3000/api/front/health > /dev/null; then
+          if ! curl -sf http://127.0.0.1:3000/api/health > /dev/null; then
             echo "❌ Frontend health check failed"
             pm2 logs frontend --lines 50
             exit 1
@@ -318,7 +342,29 @@ jobs:
 
           EOF
 
-      # 5️. 보안 그룹에서 IP 제거 (항상 실행)
+      # 5. 배포 후 스모크 테스트
+      - name: Post-deploy Smoke Test
+        run: |
+          set -euo pipefail
+
+          BASE_URL="${{ secrets.DEV_BASE_URL }}"
+
+          echo "🔎 Smoke 1) Health check: ${BASE_URL}/api/health"
+          curl -fsS "${BASE_URL}/api/health" >/dev/null
+
+          echo "🔎 Smoke 2) Main page (follow redirect) : ${BASE_URL}/"
+          curl -fsSL -o /tmp/home.html "${BASE_URL}/" >/dev/null
+
+          # HTML인지 최소 확인(502/JSON/리다이렉트 루프 같은 경우 걸러냄)
+          grep -qi "<html" /tmp/home.html || {
+            echo "❌ Main page is not HTML"
+            head -n 40 /tmp/home.html || true
+            exit 1
+          }
+
+          echo "✅ Frontend smoke tests passed"
+
+      # 6. 보안 그룹에서 IP 제거 (항상 실행)
       - name: Remove IP from Security Group
         if: always()
         run: |

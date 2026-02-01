@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { getCategories } from './getCategories'
+import { getCategories } from '../api/getCategories'
 
 import type { CategoryItemType } from '@/entities/category'
 
@@ -11,5 +11,6 @@ export function useCategoryList(accessToken: string) {
     queryKey: ['categories'],
     queryFn: () => getCategories(accessToken),
     enabled: Boolean(accessToken),
+    initialData: [],
   })
 }

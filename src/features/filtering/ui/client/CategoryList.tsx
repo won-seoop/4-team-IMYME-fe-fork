@@ -16,7 +16,7 @@ export function CategoryList({
   selectedCategoryId,
 }: CategoryListProps) {
   return (
-    <div className="h-full overflow-y-scroll">
+    <div className="h-full min-h-0 overflow-y-auto">
       {categories.map((category) => (
         <CategoryItem
           key={category.id}

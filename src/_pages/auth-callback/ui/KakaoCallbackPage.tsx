@@ -1,16 +1,27 @@
 'use client'
 
+import axios from 'axios'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { NextResponse } from 'next/server'
 import { useEffect } from 'react'
 
-import { UserProfile } from '@/entities/user'
 import { useSetProfile } from '@/entities/user/model/useUserStore'
 import { useSetAccessToken } from '@/features/auth/model/client/useAuthStore'
+import { httpClient } from '@/shared'
+
+import type { UserProfile } from '@/entities/user'
 
 const DEVICE_UUID_STORAGE_KEY = 'device_uuid'
 const KAKAO_CODE_QUERY_KEY = 'code'
 const DEFAULT_REDIRECT_PATH = '/main'
-const REFRESH_TOKEN_CLEAR_ENDPOINT = '/api/auth/token/refresh/clear'
+const REFRESH_TOKEN_CLEAR_PATH = '/api/auth/token/refresh/clear'
+const KAKAO_EXCHANGE_PATH = '/api/auth/kakao/exchange'
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL ?? ''
+
+const buildServerUrl = (path: string) => {
+  const normalizedBase = SERVER_URL.replace(/\/$/, '')
+  return `${normalizedBase}${path}`
+}
 
 export const createUuidForRegex = (): string => {
   // 가장 간단하고 표준(UUID v4)
@@ -49,7 +60,7 @@ export function KakaoCallbackPage() {
 
       if (!code) {
         try {
-          await fetch(REFRESH_TOKEN_CLEAR_ENDPOINT, { method: 'POST' })
+          await fetch(buildServerUrl(REFRESH_TOKEN_CLEAR_PATH), { method: 'POST' })
         } catch {}
         router.replace('/login')
         return
@@ -67,7 +78,7 @@ export function KakaoCallbackPage() {
       }
 
       // ✅ 2) 동일 출처 API로 교환 (URL에 토큰 싣지 않음)
-      const res = await fetch('/api/auth/kakao/exchange', {
+      const res = await fetch(buildServerUrl(KAKAO_EXCHANGE_PATH), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, deviceUuid }),
@@ -86,9 +97,35 @@ export function KakaoCallbackPage() {
 
       // ✅ 3) access token → zustand
       setAccessToken(data.accessToken)
-      setProfile(data.user)
 
-      router.replace(DEFAULT_REDIRECT_PATH)
+      try {
+        const profileResponse = await httpClient.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        })
+
+        const profile = profileResponse.data?.data
+
+        if (!profile) {
+          router.replace('/login')
+          return
+        }
+
+        setProfile(profile)
+        router.replace(DEFAULT_REDIRECT_PATH)
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          const status = err.response?.status ?? 500
+          const data = err.response?.data
+          console.error('[kakao exchange] axios error', status, data)
+
+          return NextResponse.json(
+            { message: 'backend_exchange_failed', status, data },
+            { status }, // ✅ 실제 status 그대로 전달
+          )
+        }
+      }
     }
 
     void run()

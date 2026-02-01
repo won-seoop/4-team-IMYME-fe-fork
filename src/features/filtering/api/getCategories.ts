@@ -20,6 +20,7 @@ export async function getCategories(accessToken: string): Promise<CategoryItemTy
         Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
       },
     })
+
     const items = response.data?.data ?? []
 
     return items.map((item) => ({

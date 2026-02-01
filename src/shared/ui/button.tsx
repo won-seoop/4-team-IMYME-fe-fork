@@ -21,6 +21,11 @@ const buttonVariants = cva(
         mode_btn_primary: 'mode-btn-primary',
         see_more: 'bg-background max-w-8 max-h-4 text-sm text-black/50 ml-auto mr-10',
         filter_btn: 'w-full bg-secondary text-primary  border-primary',
+        confirm_btn_primary: 'confirm-btn-primary',
+        cancel_btn_primary: 'cancel-btn-primary',
+        record_confirm_btn: 'record-confirm-btn',
+        carousel_btn: 'bg-background',
+        levelup_feedback_btn: 'bg-secondary w-40 h-10 rounded-2xl',
       },
       size: {
         default: 'h-9 px-4 py-2',

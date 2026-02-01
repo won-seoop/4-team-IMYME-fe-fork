@@ -8,8 +8,8 @@ type MenuVisibleLayoutProps = {
 
 export function MenuVisibleLayout({ children }: MenuVisibleLayoutProps) {
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <Header />
+    <div className="flex h-full min-h-screen w-full flex-col">
+      <Header goMain={true} />
       {children}
     </div>
   )

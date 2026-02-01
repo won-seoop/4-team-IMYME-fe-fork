@@ -1,3 +1,2 @@
 export { LevelUpStartPage } from './ui/LevelUpStartPage'
-
-export { LevelUpRecordingPage } from './ui/LevelUpRecordingPage'
+export { LevelUpFeedbackPage } from './ui/LevelUpFeedbackPage'

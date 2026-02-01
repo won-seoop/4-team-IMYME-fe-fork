@@ -12,6 +12,7 @@ const ERROR_MESSAGES: Record<'unsupported-type' | 'file-too-large', string> = {
 export function useProfileImageForm() {
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const latestPreviewRef = useRef<string | null>(null)
 
@@ -37,6 +38,8 @@ export function useProfileImageForm() {
 
       if (!file) {
         setErrorMessage(null)
+        setError(false)
+        setFile(null)
         setImagePreview(null)
         return
       }
@@ -45,12 +48,15 @@ export function useProfileImageForm() {
       if (!validation.ok) {
         setError(true)
         setErrorMessage(ERROR_MESSAGES[validation.reason])
+        setFile(null)
         setImagePreview(null)
         return
       }
 
       const nextPreview = URL.createObjectURL(file)
       setImagePreview(nextPreview)
+      setFile(file)
+      setError(false)
       setErrorMessage(null)
     },
     [imagePreview],
@@ -60,6 +66,7 @@ export function useProfileImageForm() {
     acceptTypes: ACCEPTED_TYPES.join(','),
     error,
     errorMessage,
+    file,
     imagePreview,
     handleFileChange,
   }

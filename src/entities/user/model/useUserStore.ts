@@ -22,6 +22,7 @@ type UserStoreState = {
 }
 
 const createInitialProfile = (): UserProfile => ({
+  id: 0,
   nickname: '',
   profileImageUrl: '',
   level: 0,
@@ -93,3 +94,4 @@ export const useSetProfile = () => useUserStore((s) => s.actions.setProfile)
 export const useClearProfile = () => useUserStore((s) => s.actions.clearProfile)
 export const useNickname = () => useUserStore((s) => s.profile.nickname)
 export const useProfileImage = () => useUserStore((s) => s.profile.profileImageUrl)
+export const useUserId = () => useUserStore((s) => s.profile.id)

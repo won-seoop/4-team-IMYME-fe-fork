@@ -1,10 +1,16 @@
-import { useProfileImage } from '@/entities/user/model/useUserStore'
+'use client'
+
+import { useProfile, useProfileImage, useSetProfile } from '@/entities/user/model/useUserStore'
+import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import {
   ProfileImageInput,
   NicknameInput,
   useNicknameForm,
   useProfileImageForm,
   ProfileEditTryButton,
+  getProfileImageUrl,
+  uploadProfileImage,
+  updateProfile,
 } from '@/features/profile-edit'
 import defaultAvatar from '@/shared/assets/images/default-avatar.svg'
 import {
@@ -27,6 +33,7 @@ type ProfileEditModalProps = {
 export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) {
   const {
     imagePreview,
+    file,
     handleFileChange,
     acceptTypes,
     error: profileImageError,
@@ -41,7 +48,50 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
     errorMessage: nicknameErrorMessage,
   } = useNicknameForm()
 
-  const handleProfileEdit = () => {}
+  const accessToken = useAccessToken()
+  const profile = useProfile()
+  const setProfile = useSetProfile()
+
+  const handleProfileEdit = async () => {
+    if (!accessToken) return
+
+    const trimmedNickname = nickname.trim()
+    const nextNickname = trimmedNickname.length > 0 ? trimmedNickname : null
+    let profileImageUrl: string | null = null
+    let profileImageKey: string | null = null
+
+    if (file) {
+      const presigned = await getProfileImageUrl(accessToken, file.type)
+      if (!presigned.ok) return
+
+      const uploadResult = await uploadProfileImage(presigned.uploadUrl, file)
+      if (!uploadResult.ok) return
+
+      profileImageUrl = presigned.profileImageUrl
+      profileImageKey = presigned.profileImageKey
+    }
+
+    if (!nextNickname && !profileImageUrl && !profileImageKey) return
+
+    const result = await updateProfile(accessToken, {
+      nickname: nextNickname,
+      profileImageUrl,
+      profileImageKey,
+    })
+
+    if (!result.ok || !result.data) return
+
+    setProfile({
+      id: result.data.id ?? profile.id,
+      nickname: result.data.nickname ?? profile.nickname,
+      profileImageUrl: result.data.profileImageUrl ?? profile.profileImageUrl,
+      level: result.data.level ?? profile.level,
+      activeCardCount: result.data.activeCardCount ?? profile.activeCardCount,
+      consecutiveDays: result.data.consecutiveDays ?? profile.consecutiveDays,
+      winCount: result.data.winCount ?? profile.winCount,
+    })
+    onOpenChange(false)
+  }
 
   const storeProfileImageUrl = useProfileImage()
 
@@ -79,7 +129,10 @@ export function ProfileEditModal({ open, onOpenChange }: ProfileEditModalProps) 
           helperVariant={nicknameError ? 'error' : 'default'}
         />
         <DialogFooter>
-          <ProfileEditTryButton onClick={handleProfileEdit} />
+          <ProfileEditTryButton
+            onClick={handleProfileEdit}
+            disabled={nicknameError || profileImageError}
+          />
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,22 +1,26 @@
 'use client'
 
-import { ChevronRight, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 
 import { CategoryItemType } from '@/entities/category'
 import { KeywordItemType } from '@/entities/keyword'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { CategoryList, KeywordList, useCategoryList, useKeywordList } from '@/features/filtering'
+import { FilteringCondition } from '@/features/filtering'
 import { Button } from '@/shared/ui/button'
-import {
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/shared/ui/drawer'
+import { DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/shared/ui/drawer'
 
-export function FilteringTab() {
+type FilteringSelection = {
+  category: CategoryItemType | null
+  keyword: KeywordItemType | null
+}
+
+type FilteringTabProps = {
+  onApply?: (selection: FilteringSelection) => void
+  onClose?: () => void
+}
+
+export function FilteringTab({ onApply, onClose }: FilteringTabProps) {
   const accessToken = useAccessToken()
   const {
     data: categoryData = [],
@@ -30,8 +34,8 @@ export function FilteringTab() {
     isLoading: keywordLoading,
     error: keywordError,
   } = useKeywordList({
+    categoryId: selectedCategory?.id ?? null,
     accessToken,
-    categoryId: selectedCategory ? selectedCategory.id : null,
   })
 
   const handleCategoryClick = (category: CategoryItemType) => {
@@ -47,43 +51,39 @@ export function FilteringTab() {
     if (selectedKeyword) setSelectedKeyword(null)
   }
 
+  const handleApplyClick = () => {
+    if (!onApply) return
+
+    onApply({
+      category: selectedCategory,
+      keyword: selectedKeyword,
+    })
+    if (onClose) onClose()
+  }
+
   return (
-    <DrawerContent className="filtering-tab-frame">
+    <DrawerContent className="filtering-tab-frame h-50vh flex-col">
       <DrawerHeader>
         <DrawerTitle>카테고리 선택</DrawerTitle>
-        <DrawerDescription className="flex min-h-5 items-center gap-1">
-          {selectedCategory ? selectedCategory.categoryName : ''}
-          {selectedKeyword ? (
-            <>
-              <ChevronRight size={16} />
-              {selectedKeyword.keywordName}
-            </>
-          ) : (
-            ''
-          )}
-          <div
-            className="ml-auto flex items-center gap-2"
-            onClick={handleInitButtonClick}
-          >
-            <p>필터 초기화</p>
-            <RotateCcw size={16} />
-          </div>
-        </DrawerDescription>
+        <FilteringCondition
+          selectedCategory={selectedCategory}
+          selectedKeyword={selectedKeyword}
+          onReset={handleInitButtonClick}
+        />
       </DrawerHeader>
       <div className="bg-secondary mt-0 mb-0 h-0.5 w-full"></div>
-      <div
-        className="flex h-full flex-1 pb-0"
-        ml-3
-      >
-        <CategoryList
-          isLoading={categoryLoading}
-          error={categoryError}
-          categories={categoryData}
-          onCategoryClick={handleCategoryClick}
-          selectedCategoryId={selectedCategory ? selectedCategory.id : null}
-        />
-        <div className="bg-secondary ml-2 min-h-full w-0.5"></div>
-        <div className="h-full overflow-y-scroll">
+      <div className="flex min-h-0 pb-0">
+        <div className="min-h-0">
+          <CategoryList
+            isLoading={categoryLoading}
+            error={categoryError}
+            categories={categoryData}
+            onCategoryClick={handleCategoryClick}
+            selectedCategoryId={selectedCategory ? selectedCategory.id : null}
+          />
+        </div>
+        <div className="bg-secondary min-h-full w-0.5"></div>
+        <div className="flex min-h-0 flex-1">
           {keywordData.length > 0 ? (
             <KeywordList
               isLoading={keywordLoading}
@@ -99,8 +99,13 @@ export function FilteringTab() {
           )}
         </div>
       </div>
-      <DrawerFooter className="mt-0 flex items-center">
-        <Button variant={'filter_btn'}>선택 완료</Button>
+      <DrawerFooter className="mt-auto flex items-center">
+        <Button
+          variant={'filter_btn'}
+          onClick={handleApplyClick}
+        >
+          선택 완료
+        </Button>
       </DrawerFooter>
     </DrawerContent>
   )
