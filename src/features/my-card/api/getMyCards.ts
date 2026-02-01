@@ -22,7 +22,7 @@ export async function getMyCards(accessToken: string, limit?: number): Promise<M
       headers: {
         Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
       },
-      params: limit ? { limit } : undefined,
+      params: { ...(limit ? { limit } : {}), ghost: false },
     })
 
     return response.data?.data?.cards ?? []

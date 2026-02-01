@@ -6,7 +6,7 @@ import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { useAttemptDetailsList } from '@/features/levelup-feedback'
 
 import type { CardDetails } from '@/features/levelup-feedback'
-import type { FeedbackItem } from '@/features/levelup-feedback/ui/FeedbackTab'
+import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
 
 type UseFeedbackDataResult = {
   feedbackData: FeedbackItem[]
@@ -32,24 +32,24 @@ export function useFeedbackData(cardDetails: CardDetails | null): UseFeedbackDat
   const attemptQueries = useAttemptDetailsList(accessToken, attemptParams)
   const isLoading = attemptQueries.some((query) => query.isLoading)
 
-  const feedbackData: FeedbackItem[] = attemptQueries
-    .map((query, index) => ({
-      data: query.data,
-      attemptIndex: attemptParams[index]?.attemptIndex ?? 0,
-    }))
-    .filter((item): item is { data: NonNullable<typeof item.data>; attemptIndex: number } =>
-      Boolean(item.data),
-    )
-    .map((item) => ({
-      id: item.data.attemptId,
-      attemptNo: item.attemptIndex,
-      summary: item.data.feedback.summary,
-      keywords: item.data.feedback.keywords,
-      facts: item.data.feedback.facts,
-      understanding: item.data.feedback.understanding,
-      socraticFeedback: item.data.feedback.socraticFeedback,
-      createdAt: item.data.feedback.createdAt,
-    }))
+  const feedbackData: FeedbackItem[] = (attemptQueries ?? [])
+    .map((query, index) => {
+      const data = query?.data
+      const feedback = data?.feedback
+      if (!feedback) return null
+
+      return {
+        id: data.attemptId ?? attemptParams[index]?.attemptId ?? 0,
+        attemptNo: attemptParams[index]?.attemptIndex ?? 0,
+        summary: feedback.summary ?? '',
+        keywords: feedback.keywords ?? '',
+        facts: feedback.facts ?? '',
+        understanding: feedback.understanding ?? '',
+        socraticFeedback: feedback.socraticFeedback ?? '',
+        createdAt: feedback.createdAt ?? '',
+      } as FeedbackItem
+    })
+    .filter((item): item is FeedbackItem => item != null)
     .sort((a, b) => b.attemptNo - a.attemptNo)
 
   return { feedbackData, isLoading }

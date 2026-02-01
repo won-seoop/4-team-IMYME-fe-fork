@@ -11,6 +11,7 @@ export { SubjectCard } from './ui/SubjectCard'
 export { SubjectHeader } from './ui/SubjectHeader'
 export { formatDate } from './lib/formatDate'
 export { AlertModal } from './ui/AlertModal'
+export { RecordTipBox } from './ui/RecordTipBox'
 export {
   Dialog,
   DialogContent,
@@ -22,3 +23,4 @@ export {
   DialogClose,
 } from './ui/dialog'
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+export { LevelUpHeader } from './ui/LevelUpHeader'

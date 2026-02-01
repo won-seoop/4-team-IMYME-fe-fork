@@ -18,6 +18,7 @@ export type AttemptDetails = {
   attemptNo: number
   cardId: number
   status: string
+  step?: string
   audioUrl: string
   durationSeconds: number
   sttText: string

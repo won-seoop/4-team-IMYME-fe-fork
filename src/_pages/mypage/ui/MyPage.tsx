@@ -9,7 +9,7 @@ export function MyPage() {
   const { selectedCategory, selectedKeyword, handleFilteringApply } = useFilteringSelection()
 
   return (
-    <div className="w-full">
+    <div className="mb-5 h-full w-full">
       <ProfileDashboard
         navigateToMyPage={false}
         showBackButton={true}

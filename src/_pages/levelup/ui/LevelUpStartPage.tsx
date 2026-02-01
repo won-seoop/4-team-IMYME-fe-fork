@@ -4,13 +4,9 @@ import { useState } from 'react'
 
 import { CategoryItemType } from '@/entities/category'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
-import {
-  CardNameModal,
-  CategorySelectList,
-  KeywordSelectList,
-  LevelUpHeader,
-} from '@/features/levelup'
+import { CardNameModal, CategorySelectList, KeywordSelectList } from '@/features/levelup'
 import { createCard } from '@/features/levelup/api/createCard'
+import { LevelUpHeader } from '@/shared'
 
 import type { KeywordItemType } from '@/entities/keyword'
 const STEP_ONE_PROGRESS_VALUE = 33

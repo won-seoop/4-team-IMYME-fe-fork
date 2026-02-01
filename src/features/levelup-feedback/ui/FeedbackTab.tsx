@@ -1,6 +1,7 @@
 'use client'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared'
+import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
 import {
   Carousel,
   CarouselContent,
@@ -9,19 +10,9 @@ import {
   CarouselPrevious,
 } from '@/shared/ui/carousel'
 
-export type FeedbackItem = {
-  id: number
-  attemptNo: number
-  summary: string
-  keywords: string
-  facts: string
-  understanding: string
-  socraticFeedback: string
-  createdAt: Date
-}
-
 type FeedbackTabProps = {
   feedbackData: FeedbackItem[]
+  showButtons?: boolean
 }
 
 const CAROUSEL_CLASSNAME =
@@ -36,9 +27,14 @@ const TAB_CONTENT_CLASSNAME =
 const REVIEW_SECTION_CLASSNAME = 'w-full self-center pt-3'
 const REVIEW_TITLE_CLASSNAME = 'text-start text-sm font-semibold'
 const REVIEW_BOX_CLASSNAME =
-  'break-normal min-h-[10vh] w-full rounded-2xl bg-white p-3 whitespace-pre-line'
+  'break-normal min-h-[10vh] w-full rounded-2xl bg-white p-3 whitespace-pre-line text-sm'
 
-export function FeedbackTab({ feedbackData }: FeedbackTabProps) {
+const DEFAULT_SHOW_BUTTONS = true
+
+export function FeedbackTab({
+  feedbackData,
+  showButtons = DEFAULT_SHOW_BUTTONS,
+}: FeedbackTabProps) {
   if (feedbackData.length === 0) {
     return <p>피드백 데이터가 없습니다.</p>
   }
@@ -67,35 +63,39 @@ export function FeedbackTab({ feedbackData }: FeedbackTabProps) {
                       <TabsTrigger value="understanding">이해도</TabsTrigger>
                     </TabsList>
                     <TabsContent value="summary">
-                      <div className={TAB_CONTENT_CLASSNAME}>{feedback.summary}</div>
+                      <div className={TAB_CONTENT_CLASSNAME}>{feedback.summary ?? ''}</div>
                     </TabsContent>
                     <TabsContent value="keywords">
-                      <div className={TAB_CONTENT_CLASSNAME}>{feedback.keywords}</div>
+                      <div className={TAB_CONTENT_CLASSNAME}>{feedback.keywords ?? ''}</div>
                     </TabsContent>
                     <TabsContent value="facts">
-                      <div className={TAB_CONTENT_CLASSNAME}>{feedback.facts}</div>
+                      <div className={TAB_CONTENT_CLASSNAME}>{feedback.facts ?? ''}</div>
                     </TabsContent>
                     <TabsContent value="understanding">
-                      <div className={TAB_CONTENT_CLASSNAME}>{feedback.understanding}</div>
+                      <div className={TAB_CONTENT_CLASSNAME}>{feedback.understanding ?? ''}</div>
                     </TabsContent>
                   </Tabs>
                   <div className={REVIEW_SECTION_CLASSNAME}>
                     <p className={REVIEW_TITLE_CLASSNAME}>총평 및 추가 질문</p>
-                    <div className={REVIEW_BOX_CLASSNAME}>{feedback.socraticFeedback}</div>
+                    <div className={REVIEW_BOX_CLASSNAME}>{feedback.socraticFeedback ?? ''}</div>
                   </div>
                 </div>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious
-          className="left-1"
-          variant="carousel_btn"
-        />
-        <CarouselNext
-          className="right-1"
-          variant="carousel_btn"
-        />
+        {showButtons ? (
+          <>
+            <CarouselPrevious
+              className="left-1"
+              variant="carousel_btn"
+            />
+            <CarouselNext
+              className="right-1"
+              variant="carousel_btn"
+            />
+          </>
+        ) : null}
       </Carousel>
     </>
   )

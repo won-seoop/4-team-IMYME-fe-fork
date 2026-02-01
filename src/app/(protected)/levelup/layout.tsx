@@ -8,9 +8,9 @@ type LevelUpLayoutProps = {
 
 export default function LevelUpLayout({ children }: LevelUpLayoutProps) {
   return (
-    <div>
+    <>
       <Header showMenu={false} />
       {children}
-    </div>
+    </>
   )
 }
