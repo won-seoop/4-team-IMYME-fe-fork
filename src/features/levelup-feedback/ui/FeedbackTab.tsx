@@ -1,6 +1,7 @@
 'use client'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared'
+import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
 import {
   Carousel,
   CarouselContent,
@@ -8,17 +9,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/shared/ui/carousel'
-
-export type FeedbackItem = {
-  id: number
-  attemptNo: number
-  summary?: string
-  keywords?: string
-  facts?: string
-  understanding?: string
-  socraticFeedback?: string
-  createdAt: Date
-}
 
 type FeedbackTabProps = {
   feedbackData: FeedbackItem[]

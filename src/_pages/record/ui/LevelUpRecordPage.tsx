@@ -5,18 +5,19 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { deleteCard } from '@/entities/card'
-import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
+import { useAccessToken } from '@/features/auth'
 import { startWarmup } from '@/features/levelup'
-import { useCardDetails } from '@/features/levelup-feedback'
-import { FeedbackLoader } from '@/features/levelup-feedback/ui/FeedbackLoader'
+import {
+  useCardDetails,
+  deleteAttempt,
+  FeedbackLoader,
+  FeedbackStatus,
+} from '@/features/levelup-feedback'
 import { MicrophoneBox, useMicrophone } from '@/features/record'
 import { completeAudioUpload, getAudioUrl, uploadAudio } from '@/features/record'
-import { createAttempt } from '@/features/record/api/createAttempt'
 import { LevelUpHeader } from '@/shared'
 import { AlertModal, RecordTipBox, SubjectHeader } from '@/shared'
 import { Button } from '@/shared/ui/button'
-import { deleteAttempt } from '@/features/levelup-feedback/api/deleteAttempt'
-import type { FeedbackStatus } from '@/features/levelup-feedback/ui/FeedbackLoader'
 
 const RECORD_PROGRESS_VALUE = 100
 const RECORD_STEP_LABEL = '3/3'
@@ -42,7 +43,6 @@ export function LevelUpRecordPage() {
   const params = useParams()
   const searchParams = useSearchParams()
   const cardIdFromQuery = searchParams.get('cardId')
-  const attemptIdFromQuery = searchParams.get('attemptId')
   const cardIdFromParams = params.id?.toString()
   const cardIdValue = cardIdFromQuery ?? cardIdFromParams
   const cardId = cardIdValue ? Number(cardIdValue) : undefined

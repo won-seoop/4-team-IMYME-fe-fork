@@ -1,9 +1,12 @@
 'use client'
 
 import { Spinner } from '@/shared/ui/Spinner'
+import type {
+  FeedbackProcessingStep,
+  FeedbackStatus,
+} from '@/features/levelup-feedback/model/feedbackTypes'
 
-export type FeedbackStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'EXPIRED'
-export type FeedbackProcessingStep = 'AUDIO_ANALYSIS' | 'FEEDBACK_GENERATION'
+export type { FeedbackProcessingStep, FeedbackStatus }
 
 type FeedbackLoaderProps = {
   status: FeedbackStatus

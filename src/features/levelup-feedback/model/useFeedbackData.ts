@@ -6,7 +6,7 @@ import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { useAttemptDetailsList } from '@/features/levelup-feedback'
 
 import type { CardDetails } from '@/features/levelup-feedback'
-import type { FeedbackItem } from '@/features/levelup-feedback/ui/FeedbackTab'
+import type { FeedbackItem } from '@/features/levelup-feedback/model/feedbackTypes'
 
 type UseFeedbackDataResult = {
   feedbackData: FeedbackItem[]
