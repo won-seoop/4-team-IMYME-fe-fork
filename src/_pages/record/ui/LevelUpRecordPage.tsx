@@ -183,7 +183,7 @@ export function LevelUpRecordPage() {
   }
 
   return (
-    <div className="h-full w-full">
+    <div className="flex h-full w-full flex-1 flex-col">
       <LevelUpHeader
         variant="recording"
         onBack={handleBack}
@@ -212,7 +212,7 @@ export function LevelUpRecordPage() {
         />
       )}
       <RecordTipBox />
-      <div className="mt-4 flex w-full items-center justify-center gap-4">
+      <div className="mt-auto flex w-full items-center justify-center gap-4 pb-6">
         <Button
           variant="record_confirm_btn"
           onClick={handleRecordingComplete}
