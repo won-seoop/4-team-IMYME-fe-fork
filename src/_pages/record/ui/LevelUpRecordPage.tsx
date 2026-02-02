@@ -148,9 +148,7 @@ export function LevelUpRecordPage() {
 
     const attemptId = audioUrlResult.data.attemptId
     setAttemptId(attemptId)
-    console.log('[record] createAttempt attemptId:', attemptId)
 
-    console.log('[record] presigned attemptId:', audioUrlResult.data?.attemptId)
     const uploadUrl = audioUrlResult.data?.uploadUrl
     if (!uploadUrl) {
       toast.error('오디오 업로드 URL이 비어있습니다.')
