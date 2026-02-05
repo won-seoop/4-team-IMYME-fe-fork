@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { register, Histogram } from 'prom-client';
+import { NextResponse } from 'next/server'
+import { register, Histogram } from 'prom-client'
 
 // NOTE: prom-client creates a global registry by default.
 // This is okay for single-process applications like a Next.js server.
@@ -13,28 +13,28 @@ const fcpHistogram = new Histogram({
   help: 'First Contentful Paint (in ms)',
   labelNames: [],
   buckets: [100, 200, 500, 1000, 1500, 2500, 4000], // Buckets in milliseconds
-});
+})
 
 const lcpHistogram = new Histogram({
   name: 'nextjs_lcp',
   help: 'Largest Contentful Paint (in ms)',
   labelNames: [],
   buckets: [500, 1000, 1500, 2500, 4000, 6000],
-});
+})
 
 const clsHistogram = new Histogram({
   name: 'nextjs_cls',
   help: 'Cumulative Layout Shift',
   labelNames: [],
   buckets: [0.1, 0.25, 0.5, 1],
-});
+})
 
 const inpHistogram = new Histogram({
   name: 'nextjs_inp',
   help: 'Interaction to Next Paint (in ms)',
   labelNames: [],
   buckets: [100, 200, 300, 500, 1000], // Common INP thresholds
-});
+})
 
 // A map to easily access the correct histogram
 const histograms: Record<string, Histogram> = {
@@ -42,7 +42,7 @@ const histograms: Record<string, Histogram> = {
   LCP: lcpHistogram,
   CLS: clsHistogram,
   INP: inpHistogram, // Add INP to the map
-};
+}
 
 /**
  * Handles GET requests to /api/metrics.
@@ -50,16 +50,16 @@ const histograms: Record<string, Histogram> = {
  */
 export async function GET() {
   try {
-    const metrics = await register.metrics();
+    const metrics = await register.metrics()
     return new NextResponse(metrics, {
       status: 200,
       headers: {
         'Content-Type': register.contentType,
       },
-    });
+    })
   } catch (error) {
-    console.error('Error getting metrics:', error);
-    return new NextResponse('Error getting metrics', { status: 500 });
+    console.error('Error getting metrics:', error)
+    return new NextResponse('Error getting metrics', { status: 500 })
   }
 }
 
@@ -69,19 +69,19 @@ export async function GET() {
  */
 export async function POST(request: Request) {
   try {
-    const { name, value } = await request.json();
-    const histogram = histograms[name];
+    const { name, value } = await request.json()
+    const histogram = histograms[name]
 
     if (histogram) {
-      histogram.observe(value);
+      histogram.observe(value)
     } else {
       // Log if an unexpected metric is received
-      console.warn(`Received unknown metric: ${name}`);
+      console.warn(`Received unknown metric: ${name}`)
     }
 
-    return new NextResponse('Metric received', { status: 202 });
+    return new NextResponse('Metric received', { status: 202 })
   } catch (error) {
-    console.error('Error receiving metric:', error);
-    return new NextResponse('Error receiving metric', { status: 400 });
+    console.error('Error receiving metric:', error)
+    return new NextResponse('Error receiving metric', { status: 400 })
   }
 }
