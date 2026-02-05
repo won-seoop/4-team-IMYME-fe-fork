@@ -1,24 +1,21 @@
 // src/shared/lib/webVitals.ts
-import type { Metric } from 'next/web-vitals'
+import type { NextWebVitalsMetric } from 'next/app'
 
-export function reportWebVitals(metric: Metric) {
-  // --- ADD THIS LINE FOR DEBUGGING ---
+export function reportWebVitals(metric: NextWebVitalsMetric) {
   console.log('reportWebVitals called:', metric)
 
-  // The `/api/metrics` endpoint is the one we just created.
-  const url = '/api/metrics'
-  const body = JSON.stringify({ name: metric.name, value: metric.value })
+  const body = JSON.stringify({
+    name: metric.name,
+    value: metric.value,
+  })
 
-  // Use `navigator.sendBeacon` if available, as it's more reliable
-  // for sending data just before a page unloads.
-  // Fall back to a standard fetch POST request.
   if (navigator.sendBeacon) {
-    navigator.sendBeacon(url, body)
+    navigator.sendBeacon('/api/metrics', body)
   } else {
-    fetch(url, {
-      body,
+    fetch('/api/metrics', {
       method: 'POST',
-      keepalive: true, // keepalive is important for reliability on page unload
+      body,
+      keepalive: true,
     })
   }
 }

@@ -2,6 +2,7 @@
 'use client'
 
 import { useReportWebVitals } from 'next/web-vitals'
+
 import { reportWebVitals as sendMetrics } from './webVitals' // Renaming for clarity
 
 // This is a client component that exists only to activate the useReportWebVitals hook.
