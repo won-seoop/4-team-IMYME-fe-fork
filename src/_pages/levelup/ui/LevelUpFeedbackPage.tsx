@@ -165,7 +165,9 @@ export function LevelUpFeedbackPage() {
           <Button
             variant="levelup_feedback_btn"
             onClick={() => {
-              optimisticallyIncreaseActiveCardCount()
+              if (status === 'COMPLETED') {
+                optimisticallyIncreaseActiveCardCount()
+              }
               router.replace('/main')
             }}
           >

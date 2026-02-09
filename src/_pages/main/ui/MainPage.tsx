@@ -3,10 +3,10 @@
 import { useEffect } from 'react'
 
 import { getMyProfile } from '@/entities/user'
-import { useProfile, useSetProfile } from '@/entities/user/model/useUserStore'
+import { useProfile, useSetProfile } from '@/entities/user'
 import { useAccessToken } from '@/features/auth'
 import { ModeButton } from '@/features/mode'
-import { RecentCardList } from '@/features/recent-card/ui/RecentCardList'
+import { RecentCardList } from '@/features/recent-card'
 import { RecentListHeader } from '@/shared'
 import { ProfileDashboard } from '@/widgets/profile'
 
