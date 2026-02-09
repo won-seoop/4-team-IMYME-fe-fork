@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
+import { useProfile, useSetCardCount } from '@/entities/user/model/useUserStore'
 import { useAccessToken } from '@/features/auth'
 import {
   deleteAttempt,
@@ -24,6 +25,8 @@ export function LevelUpFeedbackPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const accessToken = useAccessToken()
+  const profile = useProfile()
+  const setActiveCardCount = useSetCardCount()
   const [isExitAlertOpen, setIsExitAlertOpen] = useState(false)
   const [isCreatingAttempt, setIsCreatingAttempt] = useState(false)
   const cardId = Number(searchParams.get('cardId') ?? '')
@@ -70,6 +73,10 @@ export function LevelUpFeedbackPage() {
 
   const feedbackAttemptNo = feedbackData[0]?.attemptNo ?? 0
   const remainingAttempts = feedbackData.length > 0 ? Math.max(0, 5 - feedbackAttemptNo) : '-'
+
+  const optimisticallyIncreaseActiveCardCount = () => {
+    setActiveCardCount(Math.max(0, (profile.activeCardCount ?? 0) + 1))
+  }
 
   const handleBack = () => {
     setIsExitAlertOpen(true)
@@ -160,6 +167,7 @@ export function LevelUpFeedbackPage() {
           <Button
             variant="levelup_feedback_btn"
             onClick={() => {
+              optimisticallyIncreaseActiveCardCount()
               router.replace('/main')
             }}
           >
