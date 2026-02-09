@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 
 import { Card, deleteCard } from '@/entities/card'
-import { useUserId } from '@/entities/user/model/useUserStore'
+import { useProfile, useSetCardCount, useUserId } from '@/entities/user/model/useUserStore'
 import { useAccessToken } from '@/features/auth/model/client/useAuthStore'
 import { useMyCardList } from '@/features/my-card/model/useMyCardList'
 import { formatDate } from '@/shared'
@@ -17,7 +17,19 @@ export function RecentCardList() {
   const router = useRouter()
   const accessToken = useAccessToken()
   const userId = useUserId()
+  const profile = useProfile()
+  const setActiveCardCount = useSetCardCount()
   const { data = [], isLoading, error, refetch } = useMyCardList(accessToken, userId, RECENT_LIMIT)
+
+  const optimisticallyDecreaseActiveCardCount = () => {
+    const currentCount = profile.activeCardCount ?? 0
+    setActiveCardCount(Math.max(0, currentCount - 1))
+  }
+
+  const rollbackActiveCardCount = () => {
+    const currentCount = profile.activeCardCount ?? 0
+    setActiveCardCount(currentCount + 1)
+  }
 
   if (isLoading) {
     return <p className={COMMENT_CLASSNAME}>학습 기록을 불러오는 중입니다...</p>
@@ -44,10 +56,13 @@ export function RecentCardList() {
           keywordName={card.keywordName}
           onClick={() => router.push('/mypage')}
           onDelete={async () => {
+            optimisticallyDecreaseActiveCardCount()
             const deleted = await deleteCard(accessToken, card.id)
             if (deleted) {
               await refetch()
+              return
             }
+            rollbackActiveCardCount()
           }}
         />
       ))}
