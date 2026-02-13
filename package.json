@@ -32,11 +32,12 @@
   },
   "scripts": {
     "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "prepare": "husky",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "test": "echo \"(add tests)\"",
-    "build": "echo \"(add build)\""
+    "test": "echo \"(add tests)\""
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": [
