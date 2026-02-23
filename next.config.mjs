@@ -7,6 +7,9 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig = {
   productionBrowserSourceMaps: true,
+  experimental: {
+    trustHostHeader: true,
+  },
   images: {
     remotePatterns: [
       {
