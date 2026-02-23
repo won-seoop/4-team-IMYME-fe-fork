@@ -100,6 +100,7 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 uploads/
+docker-compos
 
 # Playwright
 playwright-report/
@@ -109,3 +110,6 @@ test-results/
 lighthouse/
 perf-results/
 artifacts/har/
+build.sh
+docker-compose.local.yml
+
