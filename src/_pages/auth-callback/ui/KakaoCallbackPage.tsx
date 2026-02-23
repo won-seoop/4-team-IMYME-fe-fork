@@ -70,7 +70,7 @@ export function KakaoCallbackPage() {
       // ✅ 3) access token → zustand
       setAccessToken(data.accessToken)
 
-      router.replace(DEFAULT_REDIRECT_PATH)
+      window.location.href = DEFAULT_REDIRECT_PATH
     }
 
     void run()
