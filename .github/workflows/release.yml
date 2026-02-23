@@ -224,8 +224,8 @@ jobs:
           tags: |
             219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:${{ github.sha }}
             219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:release-latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:buildcache
+          cache-to: type=registry,ref=219268921033.dkr.ecr.ap-northeast-2.amazonaws.com/imyme-frontend:buildcache,mode=max
 
       # 6. SSM으로 릴리즈 서버에 배포
       - name: Deploy with SSM (docker compose)
